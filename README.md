@@ -1,0 +1,1 @@
+# svetovka.cz-wp
