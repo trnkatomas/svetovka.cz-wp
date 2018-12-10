@@ -1,0 +1,14 @@
+version: "3"
+services:
+  db:
+    image: "mysql:5.6"
+    environment:
+      - MYSQL_ROOT_PASSWORD=test_env
+  wp-web:
+    build: "."
+    ports:
+    - "8000:8000"
+    depends_on:
+      - "db"
+    links:
+      - "db:mysql"

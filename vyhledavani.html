@@ -1,0 +1,195 @@
+<form id="search_form">
+        <div>
+        <span class="taxolabel">Fulltext</span><br>
+<input id="text_search" type="text" name="text_search" class="textinput" value=""></div>
+        <div class="rok advanced_search">
+        <span class="taxolabel">Rok</span><br>
+        </div>
+        <div style="clear:both"></div>
+        <div class="cislo advanced_search">
+        <span class="taxolabel">Číslo</span><br>
+        </div>
+        <div style="clear:both"></div>
+        <div class="jazyky advanced_search">
+        <span class="taxolabel">Jazyk</span><br>
+        </div>
+        <div style="clear:both"></div>
+        <div class="rubrika advanced_search">
+        <span class="taxolabel">Rubrika</span><br>
+        </div>
+        <div style="clear:both"></div>
+        <br>
+        <input type="button" id="advance_search_btn" value="rozšířené vyhledávání" alt="[Submit]" class="btn searchbtn">
+        <br>
+        <div class="uwpqsf_class uwpqsf_submit" >
+            <input type="submit" id="search_btn" value="Hledej" alt="[Submit]" class="btn searchbtn">
+        </div>
+        <div style="clear:both"></div>
+</form>
+<style>
+.spinner{
+  display: flex;
+  justify-content: center;
+}
+.lds-dual-ring {
+  width: 64px;
+  height: 64px;
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 46px;
+  height: 46px;
+  margin: 1px;
+  border-radius: 50%;
+  border: 5px solid #000;
+  border-color: #000 transparent #000 transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+  margin-left: auto;
+  margin-right: auto;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
+<script>
+jQuery(".advanced_search").hide()
+jQuery("#advance_search_btn").on('click', function(){
+   jQuery(".advanced_search").toggle()
+})
+get_data = function(url_r, callback){
+jQuery.ajax({
+    type: 'GET',
+    url:url_r,
+    complete: function(resp){ callback(resp) }
+})}
+render_checkbox = function(name, id, cat){
+    return `<span class="switch">
+        <input type="checkbox" class="tchkb" name="${name}" id="${cat}-${id}" value="${name}">    
+        <label for="${cat}-${id}">${name}</label>
+    </span>`
+}
+render_post_result = function(post_id, link, name, excerpt, media){
+let media_text = (media) ? `<a class="featured-media" title="${name}" href="${link}"><img width="240" height="240" src="${media[0]}" class="attachment-post-thumb size-post-thumb wp-post-image" alt="" srcset="${media[0]} 240w" sizes="(max-width: 240px) 100vw, 240px">				
+			</a>` : ``
+return ` 
+<div class="post-container">
+	<div id="post-${post_id}" class="post-${post_id} type-post status-publish format-standard hentry post">
+                        ${media_text}
+			<div class="post-header">
+			    <h2 class="post-title"><a href="${link}" title="${name}">${name}</a></h2>
+			</div> <!-- /post-header -->
+		<div class="post-excerpt">
+                    ${excerpt}
+		</div>
+	</div> <!-- /post -->
+</div> <!-- /post-container -->`
+}
+jQuery("#wrapper").after(`
+<div class="wrapper" id="results">
+<div class="content">
+<div class="spinner" style="display:none"><div class="lds-dual-ring"></div></div>
+<div class="posts" id="posts">
+</div><!-- posts -->
+</div><!-- content -->
+</div><!-- results -->
+`)
+
+ get_data("https://beta.svetovka.cz/wp-json/wp/v2/tags?per_page=100", function(x) {
+     let [cisla, roky, jazyky] = [[],[],[]]
+     id_name = x.responseJSON.map((r)=>[r.id, r.name])
+     for (elem of id_name) {
+         if (elem[1].match(/\d{4}/g)){
+             roky.push(elem)
+             continue
+         }
+         if (elem[1].match(/\d{1,2}/g)){
+             cisla.push(elem)
+             continue
+         }
+         else{
+             jazyky.push(elem)
+             continue
+         }
+     }  
+     console.log(cisla, roky, jazyky)
+     jQuery(".cislo").append(cisla.map(([id, name]) => render_checkbox(name, id, "cislo")).join(""))
+     jQuery(".rok").append(roky.map(([id, name]) => render_checkbox(name, id, "rok")).join(""))
+     jQuery(".jazyky").append(jazyky.map(([id, name]) => render_checkbox(name, id, "jazyk")).join(""))
+ })
+
+get_data("https://beta.svetovka.cz/wp-json/wp/v2/categories?per_page=100", function(x) {
+     let categories = []
+     let exclude = ["eshop", "frontpage", "slide", "Uncategorized"]
+     id_name = x.responseJSON.map((r)=>[r.id, r.name])
+     for (elem of id_name) {
+         if (exclude.indexOf(elem[1]) >= 0 ){
+             continue
+         }
+         else{
+             categories.push(elem)
+             continue
+         }
+     }  
+     jQuery(".rubrika").append(categories.map(([id, name]) => render_checkbox(name, id, "rubrika")).join(""))
+})
+
+initFunction = function(){//Masonry blocks
+	$blocks = jQuery(".posts");
+
+	$blocks.imagesLoaded(function(){
+		$blocks.masonry({
+			itemSelector: '.post-container'
+		});
+
+		// Fade blocks in after images are ready (prevents jumping and re-rendering)
+		jQuery(".post-container").fadeIn();
+	});
+	$blocks.masonry("reloadItems")
+	jQuery(document).ready( function() { setTimeout( function() { $blocks.masonry(); }, 500); });
+}
+
+jQuery('#search_form').on('submit', function(e){
+    // validation code here
+    e.preventDefault();
+    tags = []
+    for(x of jQuery("[id^=jazyk-]:checked")){
+      tags.push(jQuery(x).attr("id").split("-")[1])
+   }
+   for(x of jQuery("[id^=cislo-]:checked")){
+      tags.push(jQuery(x).attr("id").split("-")[1])
+   }
+   for(x of jQuery("[id^=rok-]:checked")){
+      tags.push(jQuery(x).attr("id").split("-")[1])
+   }
+
+   categories = []
+   for(x of jQuery("[id^=rubrika-]:checked")){
+      categories.push(jQuery(x).attr("id").split("-")[1])
+   }
+   search_q = jQuery("#text_search").val()
+
+   query = "https://beta.svetovka.cz/wp-json/wp/v2/posts?per_page=10&_embed"
+   query += (tags.length > 0) ? "&tags="+tags.join(",") : ""
+   query += (categories.length > 0) ? "&categories"+categories.join(",") : ""
+   query += (search_q) ? `&search=${search_q}` : ""
+    jQuery(".spinner").show()
+    get_data(query, function(x) {
+        id_name = x.responseJSON.map((r)=>[r.id, r.link, r.title.rendered, r.excerpt.rendered, (r._embedded["wp:featuredmedia"]) ? r._embedded["wp:featuredmedia"].map((a) => a.source_url): null])
+        jQuery(".spinner").hide()
+	for ([id, link, name, excerpt, media] of id_name){
+           post = render_post_result(id, link, name, excerpt, media)
+           jQuery("#posts").append(post) 
+        }
+        if (id_name.length == 0){
+          jQuery("spinner").text("Bohužel nebyly nalezeny výsledky odpovídající vašemu dotazu.")   
+        } 
+        initFunction()
+   })
+  });
+</script>
