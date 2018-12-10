@@ -1,0 +1,411 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Fukasawa v1.04\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2017-06-15 22:39+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 2.0.1\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
+"X-Poedit-Basepath: ..\n"
+"X-Textdomain-Support: yes\n"
+"Last-Translator: \n"
+"Language: cs_CZ\n"
+"X-Poedit-SearchPath-0: .\n"
+
+# @ fukasawa
+#: 404.php:11
+msgid "Error 404"
+msgstr "Chyba 404"
+
+# @ fukasawa
+#: 404.php:17
+msgid ""
+"It seems like you have tried to open a page that doesn't exist. It could "
+"have been deleted, moved, or it never existed at all. You are welcome to "
+"search for what you are looking for with the form below."
+msgstr "Vypadá to, že se pokoušíte otevřít stránku, která neexistuje. "
+
+# @ fukasawa
+#: archive.php:16
+#, php-format
+msgid "Category: %s"
+msgstr "Rubrika: %s"
+
+# @ fukasawa
+#: archive.php:18
+#, php-format
+msgid "Tag: %s"
+msgstr "Štítek: %s"
+
+# @ fukasawa
+#: archive.php:21
+#, php-format
+msgid "Author: %s"
+msgstr "Autor: %s"
+
+# @ fukasawa
+#: archive.php:23
+msgid "Archive"
+msgstr "Archiv"
+
+# @ fukasawa
+#: archive.php:31 index.php:17 search.php:16
+#, php-format
+msgid "Page %s of %s"
+msgstr "Stránka %s z %s"
+
+# @ fukasawa
+#: archive.php:61 index.php:41 search.php:38
+msgid "Older posts"
+msgstr "Starší příspěvky"
+
+# @ fukasawa
+#: archive.php:63 index.php:43 search.php:40
+msgid "Newer posts"
+msgstr "Novější příspěvky"
+
+# @ fukasawa
+#. gettext fix: identical singular and plural forms found, that may be ambiguous! Please check the code!
+#: comments.php:14 comments.php:97
+msgid "Comment"
+msgid_plural "Comments"
+msgstr[0] "Komentář"
+msgstr[1] "Komentáře"
+msgstr[2] ""
+
+# @ fukasawa
+#: comments.php:31
+msgid "Pingback"
+msgid_plural "Pingbacks"
+msgstr[0] "pingback"
+msgstr[1] "pingbacks"
+msgstr[2] ""
+
+# @ fukasawa
+#: comments.php:49
+msgid "Older"
+msgstr "Starší"
+
+# @ fukasawa
+#: comments.php:49 comments.php:55
+msgid "Comments"
+msgstr "Komentáře"
+
+# @ fukasawa
+#: comments.php:55
+msgid "Newer"
+msgstr "Novější"
+
+# @ fukasawa
+#: comments.php:79
+msgid "Comments are closed."
+msgstr "Není možné psát komentáře."
+
+# @ fukasawa
+#: comments.php:105
+msgid "Name"
+msgstr "Jméno"
+
+# @ fukasawa
+#: comments.php:111
+msgid "Email"
+msgstr "Email"
+
+# @ fukasawa
+#: comments.php:117
+msgid "Website"
+msgstr "Stránka"
+
+# @ fukasawa
+#: content-image.php:13
+msgid "View"
+msgstr "Pohled"
+
+# @ fukasawa
+#: functions.php:36
+msgid "Primary Menu"
+msgstr "Primární menu"
+
+# @ fukasawa
+#: functions.php:89
+msgid "Sidebar"
+msgstr "Postraní panel"
+
+# @ fukasawa
+#: functions.php:91
+msgid "Widgets in this area will be shown in the sidebar."
+msgstr "Widgety z této oblasti se zobrazí v postarnním panelu."
+
+# @ fukasawa
+#: functions.php:254
+msgid "Pingback:"
+msgstr ""
+
+# @ fukasawa
+#: functions.php:254 functions.php:307
+msgid "Edit"
+msgstr "Upravit"
+
+# @ fukasawa
+#: functions.php:292
+msgid "Your comment is awaiting moderation."
+msgstr "Váš komentář čeká na schválení."
+
+# @ fukasawa
+#: functions.php:300
+msgid "Reply"
+msgstr "Odpovědět"
+
+# @ fukasawa
+#: functions.php:341 functions.php:377
+msgid "Logo"
+msgstr "Logo"
+
+# @ fukasawa
+#: functions.php:343
+msgid "Upload a logo to replace the default site title in the sidebar/header"
+msgstr "Nahrate logo, kterým nahradíte výchozí text"
+
+# @ fukasawa
+#: functions.php:369
+msgid "Accent Color"
+msgstr ""
+
+# @ fukasawa
+#: header.php:63
+msgid "Click to view the navigation"
+msgstr ""
+
+# @ fukasawa
+#: header.php:76
+msgid "Menu"
+msgstr "Menu"
+
+# @ fukasawa
+#: header.php:77
+msgid "Close"
+msgstr "Zavřít"
+
+# @ fukasawa
+#: header.php:114
+msgid "Powered by"
+msgstr ""
+
+# @ fukasawa
+#: header.php:115
+msgid "Theme by"
+msgstr ""
+
+# @ fukasawa
+#: image.php:36
+msgid "Uploaded by"
+msgstr ""
+
+# @ fukasawa
+#: image.php:40
+msgid "Resolution:"
+msgstr ""
+
+# @ fukasawa
+#: image.php:53 page.php:49 single.php:147 template-archive.php:107
+msgid "We couldn't find any posts that matched your query. Please try again."
+msgstr ""
+"Nebyl nalezen žádný příspěvek, který by vyhovoval vašemu dotazy. Prosím, "
+"zkuste to znovu."
+
+# @ fukasawa
+#: page.php:33 single.php:84
+msgid "Pages:"
+msgstr "Stránky:"
+
+# @ fukasawa
+#: search.php:9 search.php:57
+msgid "Search results:"
+msgstr "Výsledky vyhledávání:"
+
+# @ fukasawa
+#: search.php:68
+msgid "No results. Try again, would you kindly?"
+msgstr "Žádné výsdlku. Chcete to zkusit znovu?"
+
+# @ fukasawa
+#: searchform.php:2
+msgid "Search form"
+msgstr "Vyhledávací formulář"
+
+# @ fukasawa
+#: single.php:99
+msgid "In"
+msgstr ""
+
+# @ fukasawa
+#: single.php:123 single.php:124
+msgid "Previous post"
+msgstr "Předchozí příspěvek"
+
+# @ fukasawa
+#: single.php:131 single.php:132
+msgid "Next post"
+msgstr "Následující příspěvek"
+
+# @ fukasawa
+#: template-archive.php:33
+msgid "Posts"
+msgstr "Příspěvky"
+
+# @ fukasawa
+#: template-archive.php:49
+msgid "Categories"
+msgstr "Rubriky"
+
+# @ fukasawa
+#: template-archive.php:55
+msgid "Tags"
+msgstr "Štítky"
+
+# @ fukasawa
+#: template-archive.php:62
+#, php-format
+msgid "View all posts in %s"
+msgstr "Prohlížet všechny příspěvky v %s"
+
+# @ fukasawa
+#: template-archive.php:69
+msgid "Contributors"
+msgstr "Přispěvatelé"
+
+# @ fukasawa
+#: template-archive.php:75
+msgid "Archives by Year"
+msgstr "Archiv podle roku"
+
+# @ fukasawa
+#: template-archive.php:81
+msgid "Archives by Month"
+msgstr "Archiv podle měsíce"
+
+# @ fukasawa
+#: template-archive.php:87
+msgid "Archives by Day"
+msgstr "Archiv podle dne"
+
+# @ fukasawa
+#: widgets/dribbble-widget.php:8
+msgid "Displays your latest Dribbble photos."
+msgstr ""
+
+# @ fukasawa
+#: widgets/dribbble-widget.php:88 widgets/flickr-widget.php:67
+msgid "Number of images to display:"
+msgstr ""
+
+# @ fukasawa
+#: widgets/flickr-widget.php:6
+msgid "Displays your latest Flickr photos."
+msgstr ""
+
+# @ fukasawa
+#: widgets/flickr-widget.php:61
+msgid ""
+"Flickr ID (use <a target=\"_blank\" href=\"http://www.idgettr.com\">idGettr</"
+"a>):"
+msgstr ""
+
+# @ fukasawa
+#: widgets/recent-comments.php:6
+msgid "Displays recent comments with user avatars."
+msgstr ""
+
+# @ fukasawa
+#: widgets/recent-comments.php:51
+msgid "Comment to"
+msgstr ""
+
+# @ fukasawa
+#: widgets/recent-comments.php:51
+msgid "posted"
+msgstr ""
+
+# @ fukasawa
+#: widgets/dribbble-widget.php:76 widgets/flickr-widget.php:55
+#: widgets/recent-comments.php:97 widgets/recent-posts.php:136
+#: widgets/video-widget.php:63
+msgid "Title:"
+msgstr "Titulek:"
+
+# @ fukasawa
+#: widgets/recent-comments.php:102
+msgid "Number of comments to display:"
+msgstr ""
+
+# @ fukasawa
+#: widgets/recent-comments.php:104 widgets/recent-posts.php:143
+msgid "Defaults to 5 if empty"
+msgstr ""
+
+# @ fukasawa
+#: widgets/recent-posts.php:6
+msgid "Displays recent blog entries."
+msgstr "Zobrazí poslední příspěvky."
+
+# @ fukasawa
+#: widgets/recent-posts.php:141
+msgid "Number of posts to display:"
+msgstr "Počet příspěvků k zobrazení:"
+
+# @ fukasawa
+#: widgets/video-widget.php:6
+msgid "Displays a video of your choosing."
+msgstr ""
+
+# @ fukasawa
+#: functions.php:333
+msgid "Options for Fukasawa"
+msgstr "Možnosti pro Fukasawa"
+
+# @ fukasawa
+#: functions.php:336
+msgid "Allows you to customize theme settings for Fukasawa."
+msgstr ""
+
+# @ fukasawa
+#: widgets/dribbble-widget.php:82
+msgid "Dribbble username:"
+msgstr ""
+
+# @ fukasawa
+#: widgets/video-widget.php:69
+msgid "Video URL:"
+msgstr ""
+
+# @ fukasawa
+#: widgets/dribbble-widget.php:9
+msgid "Dribbble Widget"
+msgstr ""
+
+# @ fukasawa
+#: widgets/flickr-widget.php:7
+msgid "Flickr Widget"
+msgstr ""
+
+# @ fukasawa
+#: widgets/recent-comments.php:7
+msgid "Recent Comments"
+msgstr "Nedávné komentáře"
+
+# @ fukasawa
+#: widgets/recent-posts.php:7
+msgid "Recent Posts"
+msgstr "Nedávné přípěvky"
+
+# @ fukasawa
+#: widgets/video-widget.php:7
+msgid "Video Widget"
+msgstr ""

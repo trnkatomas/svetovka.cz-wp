@@ -1,0 +1,20 @@
+.posts .post-title a, .widget-content .textwidget a:hover, h2 .post-title, body a, body a:hover, .main-menu .current-menu-item:before, .main-menu .current_page_item:before, .widget-content .textwidget a:hover, .widget_fukasawa_recent_posts a:hover .title, .widget_fukasawa_recent_comments a:hover .title, .widget_archive li a:hover, .widget_categories li a:hover, .widget_meta li a:hover, .widget_nav_menu li a:hover, .widget_rss .widget-content ul a.rsswidget:hover, #wp-calendar thead, .search-button:hover .genericon, .posts .post-title a:hover, .post-content a, .post-content a:hover, .post-content blockquote:before, .comments .pingbacks li a:hover, .comment-header h4 a:hover, .mobile-menu .current-menu-item:before, .mobile-menu .current_page_item:before, body#tinymce.wp-editor a, body#tinymce.wp-editor a:hover, body#tinymce.wp-editor blockquote:before { color:#0c787f; }	 	
+           
+.widget_tag_cloud a:hover, .flex-direction-nav a:hover, a.post-quote:hover, .post-content fieldset legend, .post-content input[type="submit"]:hover, .post-content input[type="button"]:hover, .post-content input[type="reset"]:hover, .page-links a:hover, .bypostauthor.commet .comment-header:before, .form-submit #submit:hover, .nav-toggle.active, body#tinymce.wp-editor fieldset legend, .post-content a:hover { border-bottom-color:#0c787f; }
+
+@media ( max-width: 1000px ) {
+	.sidebar { background-color: #0c787f;
+	}	
+  	}	
+    
+    .sidebar {background-color: #0c787f;   
+}
+
+.sidebar:before {background-color: #0c787f;
+}				
+
+.woocommerce #respond input#submit.alt, .woocommerce a.button.alt, .woocommerce button.button.alt, .woocommerce input.button.alt {
+    background-color: #0c787f;
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+}
