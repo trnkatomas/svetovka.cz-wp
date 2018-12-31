@@ -1,98 +1,131 @@
 <form id="search_form">
-        <div>
-        <span class="taxolabel">Fulltext</span><br>
+    <div>
+    <span class="taxolabel">Fulltextové vyhledávání</span><br>
 <input id="text_search" type="text" name="text_search" class="textinput" value=""></div>
-        <div class="rok advanced_search">
-        <span class="taxolabel">Rok</span><br>
-        </div>
-        <div style="clear:both"></div>
-        <div class="cislo advanced_search">
-        <span class="taxolabel">Číslo</span><br>
-        </div>
-        <div style="clear:both"></div>
-        <div class="jazyky advanced_search">
-        <span class="taxolabel">Jazyk</span><br>
-        </div>
-        <div style="clear:both"></div>
-        <div class="rubrika advanced_search">
-        <span class="taxolabel">Rubrika</span><br>
-        </div>
-        <div style="clear:both"></div>
-        <br>
-        <input type="button" id="advance_search_btn" value="rozšířené vyhledávání" alt="[Submit]" class="btn searchbtn">
-        <br>
-        <div class="uwpqsf_class uwpqsf_submit" >
-            <input type="submit" id="search_btn" value="Hledej" alt="[Submit]" class="btn searchbtn">
-        </div>
-        <div style="clear:both"></div>
+    <div class="rok advanced_search">
+    <span class="taxolabel">Rok</span><br>
+    </div>
+    <div style="clear:both"></div>
+    <div class="cislo advanced_search">
+    <span class="taxolabel">Číslo</span><br>
+    </div>
+    <div style="clear:both"></div>
+    <div class="jazyky advanced_search">
+    <span class="taxolabel">Jazyk</span><br>
+    </div>
+    <div style="clear:both"></div>
+    <div class="rubrika advanced_search">
+    <span class="taxolabel">Rubrika</span><br>
+    </div>
+    <div style="clear:both"></div>
+    <br>
+    <span>
+    <input type="submit" id="search_btn" value="Vyhledat" alt="[Submit]" class="btn searchbtn">
+    <input style="float: right" type="button" id="advance_search_btn" value="Rozšířené vyhledávání" alt="[Submit]" class="btn searchbtn">
+    </span>
+    </div>
+    <div style="clear:both"></div>
 </form>
 <style>
 .spinner{
-  display: flex;
-  justify-content: center;
+display: flex;
+justify-content: center;
 }
 .lds-dual-ring {
-  width: 64px;
-  height: 64px;
+width: 64px;
+height: 64px;
 }
 .lds-dual-ring:after {
-  content: " ";
-  display: block;
-  width: 46px;
-  height: 46px;
-  margin: 1px;
-  border-radius: 50%;
-  border: 5px solid #000;
-  border-color: #000 transparent #000 transparent;
-  animation: lds-dual-ring 1.2s linear infinite;
-  margin-left: auto;
-  margin-right: auto;
+content: " ";
+display: block;
+width: 46px;
+height: 46px;
+margin: 1px;
+border-radius: 50%;
+border: 5px solid #000;
+border-color: #000 transparent #000 transparent;
+animation: lds-dual-ring 1.2s linear infinite;
+margin-left: auto;
+margin-right: auto;
 }
 @keyframes lds-dual-ring {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+0% {
+transform: rotate(0deg);
+}
+100% {
+transform: rotate(360deg);
+}
 }
 </style>
 <script>
 jQuery(".advanced_search").hide()
 jQuery("#advance_search_btn").on('click', function(){
-   jQuery(".advanced_search").toggle()
+jQuery(".advanced_search").toggle('slow', function() {
+    if (jQuery(".rok").is(':visible')) {
+         jQuery("#advance_search_btn").attr('value','Skrýt rozšířené vyhledávání');                
+    } else {
+         jQuery("#advance_search_btn").attr('value','Rozšířené vyhledávání');                
+    }        
+}) 
 })
 get_data = function(url_r, callback){
 jQuery.ajax({
-    type: 'GET',
-    url:url_r,
-    complete: function(resp){ callback(resp) }
+type: 'GET',
+url:url_r,
+complete: function(resp){ callback(resp) }
 })}
+
+jQuery("body").on("click", "a.pag_href", function(event){
+event.preventDefault()
+jQuery(".posts").hide()
+jQuery(".spinner").show()
+get_data(this.href, function(x) {
+    populate_posts(x)
+})
+})
+
+const pagination_regex = /\<([^\s]+)\>;\s+rel="(\w+)"/gm;
+
 render_checkbox = function(name, id, cat){
-    return `<span class="switch">
-        <input type="checkbox" class="tchkb" name="${name}" id="${cat}-${id}" value="${name}">    
-        <label for="${cat}-${id}">${name}</label>
-    </span>`
+return `<span class="switch">
+    <input type="checkbox" class="tchkb" name="${name}" id="${cat}-${id}" value="${name}">    
+    <label for="${cat}-${id}">${name}</label>
+</span>`
 }
-render_post_result = function(post_id, link, name, excerpt, media){
+
+render_pagination = function(links_dict) {
+return `<div class="archive-nav">
+        ${("next" in links_dict)? `<a href="${links_dict["next"]}" class="archive-nav-older pag_href fleft">Další výsledky →</a>` : ""}
+        ${("prev" in links_dict)? `<a href="${links_dict["prev"]}" class="archive-nav-newer pag_href fright">← Předchozí výsledky</a>` : ""}			
+        <div class="clear"></div>			
+        </div>`
+}
+
+render_post_result = function(post_id, link, name, excerpt, tags, media){
 let media_text = (media) ? `<a class="featured-media" title="${name}" href="${link}"><img width="240" height="240" src="${media[0]}" class="attachment-post-thumb size-post-thumb wp-post-image" alt="" srcset="${media[0]} 240w" sizes="(max-width: 240px) 100vw, 240px">				
-			</a>` : ``
+        </a>` : ``
+let tags_text = `${tags.map((t) => `<a>${(parseInt(t)) ? `#` : ``}${t}</a>`).join(" ")}`
 return ` 
 <div class="post-container">
-	<div id="post-${post_id}" class="post-${post_id} type-post status-publish format-standard hentry post">
-                        ${media_text}
-			<div class="post-header">
-			    <h2 class="post-title"><a href="${link}" title="${name}">${name}</a></h2>
-			</div> <!-- /post-header -->
-		<div class="post-excerpt">
-                    ${excerpt}
-		</div>
-	</div> <!-- /post -->
+<div id="post-${post_id}" class="post-${post_id} type-post status-publish format-standard hentry post">
+                    ${media_text}
+        <div class="post-header">
+            <h2 class="post-title"><a href="${link}" title="${name}">${name}</a></h2>
+        </div> <!-- /post-header -->
+            <div class="post-excerpt">
+       <ul>
+                  <li class="post-tags">${tags_text}</li>
+       </ul>
+    </div>
+    <div class="post-excerpt">
+                ${excerpt}
+    </div>
+</div> <!-- /post -->
 </div> <!-- /post-container -->`
 }
 jQuery("#wrapper").after(`
 <div class="wrapper" id="results">
-<div class="content">
+<div class="content" id="results_div">
 <div class="spinner" style="display:none"><div class="lds-dual-ring"></div></div>
 <div class="posts" id="posts">
 </div><!-- posts -->
@@ -100,96 +133,118 @@ jQuery("#wrapper").after(`
 </div><!-- results -->
 `)
 
- get_data("https://beta.svetovka.cz/wp-json/wp/v2/tags?per_page=100", function(x) {
-     let [cisla, roky, jazyky] = [[],[],[]]
-     id_name = x.responseJSON.map((r)=>[r.id, r.name])
-     for (elem of id_name) {
-         if (elem[1].match(/\d{4}/g)){
-             roky.push(elem)
-             continue
-         }
-         if (elem[1].match(/\d{1,2}/g)){
-             cisla.push(elem)
-             continue
-         }
-         else{
-             jazyky.push(elem)
-             continue
-         }
-     }  
-     console.log(cisla, roky, jazyky)
-     jQuery(".cislo").append(cisla.map(([id, name]) => render_checkbox(name, id, "cislo")).join(""))
-     jQuery(".rok").append(roky.map(([id, name]) => render_checkbox(name, id, "rok")).join(""))
-     jQuery(".jazyky").append(jazyky.map(([id, name]) => render_checkbox(name, id, "jazyk")).join(""))
- })
+get_data("https://beta.svetovka.cz/wp-json/wp/v2/tags?per_page=100", function(x) {
+ let [cisla, roky, jazyky] = [[],[],[]]
+ id_name = x.responseJSON.map((r)=>[r.id, r.name])
+ for (elem of id_name) {
+     if (elem[1].match(/\d{4}/g)){
+         roky.push(elem)
+         continue
+     }
+     if (elem[1].match(/\d{1,2}/g)){
+         cisla.push(elem)
+         continue
+     }
+     else{
+         jazyky.push(elem)
+         continue
+     }
+ }  
+ cisla.sort((a,b) => (parseInt(a[1]) - parseInt(b[1])))
+ jQuery(".cislo").append(cisla.map(([id, name]) => render_checkbox(name, id, "cislo")).join(""))
+ jQuery(".rok").append(roky.map(([id, name]) => render_checkbox(name, id, "rok")).join(""))
+ jQuery(".jazyky").append(jazyky.map(([id, name]) => render_checkbox(name, id, "jazyk")).join(""))
+})
 
 get_data("https://beta.svetovka.cz/wp-json/wp/v2/categories?per_page=100", function(x) {
-     let categories = []
-     let exclude = ["eshop", "frontpage", "slide", "Uncategorized"]
-     id_name = x.responseJSON.map((r)=>[r.id, r.name])
-     for (elem of id_name) {
-         if (exclude.indexOf(elem[1]) >= 0 ){
-             continue
-         }
-         else{
-             categories.push(elem)
-             continue
-         }
-     }  
-     jQuery(".rubrika").append(categories.map(([id, name]) => render_checkbox(name, id, "rubrika")).join(""))
+ let categories = []
+ let exclude = ["eshop", "frontpage", "slide", "Uncategorized"]
+ id_name = x.responseJSON.map((r)=>[r.id, r.name])
+ for (elem of id_name) {
+     if (exclude.indexOf(elem[1]) >= 0 ){
+         continue
+     }
+     else{
+         categories.push(elem)
+         continue
+     }
+ }  
+ jQuery(".rubrika").append(categories.map(([id, name]) => render_checkbox(name, id, "rubrika")).join(""))
 })
 
 initFunction = function(){//Masonry blocks
-	$blocks = jQuery(".posts");
+$blocks = jQuery(".posts");
 
-	$blocks.imagesLoaded(function(){
-		$blocks.masonry({
-			itemSelector: '.post-container'
-		});
+$blocks.imagesLoaded(function(){
+    $blocks.masonry({
+        itemSelector: '.post-container'
+    });
 
-		// Fade blocks in after images are ready (prevents jumping and re-rendering)
-		jQuery(".post-container").fadeIn();
-	});
-	$blocks.masonry("reloadItems")
-	jQuery(document).ready( function() { setTimeout( function() { $blocks.masonry(); }, 500); });
+    // Fade blocks in after images are ready (prevents jumping and re-rendering)
+    jQuery(".post-container").fadeIn();
+});
+$blocks.masonry("reloadItems")
+jQuery(document).ready( function() { setTimeout( function() { $blocks.masonry(); }, 500); });
+}
+
+populate_posts = function(x){
+id_name = x.responseJSON.map((r)=>[r.id, r.link, r.title.rendered, r.excerpt.rendered,
+(r._embedded["wp:term"]) ? r._embedded["wp:term"].flatMap((a) => a.map((b) => b["name"])): null, (r._embedded["wp:featuredmedia"]) ? r._embedded["wp:featuredmedia"].map((a) => a.source_url): null])
+jQuery(".spinner").hide()
+jQuery("#posts").show()
+jQuery("#posts").empty()
+for ([id, link, name, excerpt, tags, media] of id_name){
+  post = render_post_result(id, link, name, excerpt, tags, media)
+  jQuery("#posts").append(post) 
+}
+if (id_name.length == 0){
+   jQuery(".spinner").text("Bohužel nebyly nalezeny výsledky odpovídající vašemu dotazu.")   
+   jQuery(".spinner").show()
+} 
+initFunction()
+let pages = get_links_dict(x.getResponseHeader("link"))
+jQuery(".archive-nav").empty()
+jQuery("#results_div").append(render_pagination(pages))
+}
+
+get_links_dict = function(data){
+links_dict = {}
+while ((pages = pagination_regex.exec(data)) !== null) {
+  if (pages.index === pagination_regex.lastIndex) {
+    pagination_regex.lastIndex++;
+  }
+  links_dict[pages[2]] = pages[1]
+}
+return links_dict
 }
 
 jQuery('#search_form').on('submit', function(e){
-    // validation code here
-    e.preventDefault();
-    tags = []
-    for(x of jQuery("[id^=jazyk-]:checked")){
-      tags.push(jQuery(x).attr("id").split("-")[1])
-   }
-   for(x of jQuery("[id^=cislo-]:checked")){
-      tags.push(jQuery(x).attr("id").split("-")[1])
-   }
-   for(x of jQuery("[id^=rok-]:checked")){
-      tags.push(jQuery(x).attr("id").split("-")[1])
-   }
+// validation code here
+e.preventDefault();
+tags = []
+for(x of jQuery("[id^=jazyk-]:checked")){
+  tags.push(jQuery(x).attr("id").split("-")[1])
+}
+for(x of jQuery("[id^=cislo-]:checked")){
+  tags.push(jQuery(x).attr("id").split("-")[1])
+}
+for(x of jQuery("[id^=rok-]:checked")){
+  tags.push(jQuery(x).attr("id").split("-")[1])
+}
 
-   categories = []
-   for(x of jQuery("[id^=rubrika-]:checked")){
-      categories.push(jQuery(x).attr("id").split("-")[1])
-   }
-   search_q = jQuery("#text_search").val()
+categories = []
+for(x of jQuery("[id^=rubrika-]:checked")){
+  categories.push(jQuery(x).attr("id").split("-")[1])
+}
+search_q = jQuery("#text_search").val()
 
-   query = "https://beta.svetovka.cz/wp-json/wp/v2/posts?per_page=10&_embed"
-   query += (tags.length > 0) ? "&tags="+tags.join(",") : ""
-   query += (categories.length > 0) ? "&categories"+categories.join(",") : ""
-   query += (search_q) ? `&search=${search_q}` : ""
-    jQuery(".spinner").show()
-    get_data(query, function(x) {
-        id_name = x.responseJSON.map((r)=>[r.id, r.link, r.title.rendered, r.excerpt.rendered, (r._embedded["wp:featuredmedia"]) ? r._embedded["wp:featuredmedia"].map((a) => a.source_url): null])
-        jQuery(".spinner").hide()
-	for ([id, link, name, excerpt, media] of id_name){
-           post = render_post_result(id, link, name, excerpt, media)
-           jQuery("#posts").append(post) 
-        }
-        if (id_name.length == 0){
-          jQuery("spinner").text("Bohužel nebyly nalezeny výsledky odpovídající vašemu dotazu.")   
-        } 
-        initFunction()
-   })
-  });
+query = "https://beta.svetovka.cz/wp-json/wp/v2/posts?per_page=10&_embed"
+query += (tags.length > 0) ? "&tags="+tags.join(",") : ""
+query += (categories.length > 0) ? "&categories"+categories.join(",") : ""
+query += (search_q) ? `&search=${search_q}` : ""
+jQuery(".spinner").show()
+get_data(query, function(x) {
+    populate_posts(x)
+})
+});
 </script>

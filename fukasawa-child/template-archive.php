@@ -31,17 +31,16 @@ Template Name: Archive Template
 			
 			<?php
 			$paged = (get_query_var('paged')) ? get_query_var('paged') : intval(date("Y"));
-			//$wp_query = new WP_Query("cat=6");	// select only cislo 								 
 			$wp_query = new WP_Query(array(
 			  		'category_name' => 'cislo',
 			  		//'paged' => $paged,
 			  		'tag' => ''.$paged,	
 			        'posts_per_page'=> '11',
-	                'order' => 'DESC',
+	                'order' => 'ASC',
 	                'orderby' => 'date',
 					));	// select only cislo 								 
 			//echo $paged;
-			echo $wp_query->query_vars["tag"];            
+			echo $wp_query->query_vars["tag"];   
 		
 			
             /*if ( "1" < $wp_query->max_num_pages ) :*/ ?>
@@ -98,7 +97,7 @@ Template Name: Archive Template
 				while ( have_posts() ) : the_post(); ?>
 		  	<?php 			
 			if (($counter % 4) == 1 ){
-			  echo '<div class="section group">';
+			  echo '<div class="section group" style="width:100%">';
 			} ?>
 			<?php get_template_part( 'content-archiv', get_post_format() ); ?>
 		  	<?php foreach(get_the_tags() as $tag){
@@ -106,7 +105,7 @@ Template Name: Archive Template
 			  	$counter++;
 			  }
 			}?>
-			<?php if (($counter % 4) == 0 || $wp_query->post_count == ($counter-1)){
+			<?php if (($counter % 4) == 0 || $wp_query->found_posts == $counter){
 			  echo '</div> <!-- section group -->';
 			}
 			

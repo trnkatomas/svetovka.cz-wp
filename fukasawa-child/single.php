@@ -69,7 +69,57 @@
 							$content = apply_filters('the_content', $content);
 							echo $content;
 						} else {
-							the_content();
+                          $categories = get_the_category();
+                          $cislo = false;
+				          if ($categories) {
+                              foreach($categories as $category) {
+                                  if ($category->slug == 'cislo') {
+                      	              $cislo = true;
+                        		      break;
+                                  }
+                              }                            
+                          }  	
+                          if ($cislo) {
+                             $content = get_the_content();              
+                             $content = apply_filters( 'the_content', $content );                                                         
+    						 $content = str_replace( ']]>', ']]&gt;', $content );                             
+                             $insert_index = strpos($content, 'Úvodník');
+                             $product = wc_get_product( wc_get_product_id_by_sku(get_the_date('Y').'-'.get_the_date('m')) );
+					         $price = $product->get_regular_price();
+                             $prod_id = $product->get_id();
+                             $insert_text = '<div class="woocommerce columns-1" style="margin-bottom: -200px;float: right;">';
+			                 $insert_text .= '<ul class="products columns-1">';
+			                 $insert_text .= '<li class="product type-product status-publish has-post-thumbnail product-type-simple">';
+                             $insert_text .= "<a href='". (($product->is_in_stock()) ? "/obchod/?add-to-cart={$prod_id}'" : "#' style='pointer-events: none;'") . "data-quantity='1' class='button product_type_simple add_to_cart_button ajax_add_to_cart' data-product_id='{$prod_id}' data-product_sku='' aria-label='Přidat do košíku' rel='nofollow'>";
+							 $insert_text .= ($product->is_in_stock()) ? "Koupit za {$price} Kč</a>" : "Vyprodano</a>";
+							 $insert_text .= '</li></ul></div><div class="clear_column"></div>';                             
+							 echo substr($content, 0, $insert_index - 83) . $insert_text . substr($content, $insert_index - 83);
+                          } else {                             
+						  	 $content = get_the_content();              
+                             $tags = get_the_tags();
+                             $tag_array = array();
+                             foreach ($tags as $t) {
+                               $tag_array[] = $t->name;                               
+                             }   
+                             $custom_query = new WP_Query(array(
+			  						'category_name' => 'cislo',
+                                    'tag_slug__and' => $tag_array,	
+							        'posts_per_page'=> '1',
+	                				'order' => 'ASC',
+	                				'orderby' => 'date',
+							));
+                            if ($custom_query->found_posts) {
+                             
+                             while($custom_query->have_posts()) {
+                              $custom_query->the_post();
+							  $content .= "<p><a style='float:right' href='".get_the_permalink(get_the_ID())."'>Zpět na číslo</a></p><br>";
+                            }
+                             $custom_query->reset_postdata();
+                           }
+                            $content = apply_filters( 'the_content', $content );                                                         
+    						$content = str_replace( ']]>', ']]&gt;', $content );                             
+                            echo $content;
+                          }
 						}
 					?>
 			    
