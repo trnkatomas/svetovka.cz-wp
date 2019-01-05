@@ -240,7 +240,7 @@ search_q = jQuery("#text_search").val()
 
 query = "https://beta.svetovka.cz/wp-json/wp/v2/posts?per_page=10&_embed"
 query += (tags.length > 0) ? "&tags="+tags.join(",") : ""
-query += (categories.length > 0) ? "&categories"+categories.join(",") : ""
+query += (categories.length > 0) ? "&categories="+categories.join(",") : ""
 query += (search_q) ? `&search=${search_q}` : ""
 jQuery(".spinner").show()
 get_data(query, function(x) {

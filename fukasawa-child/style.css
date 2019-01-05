@@ -52,14 +52,7 @@
 
 html, body { margin:0; padding:0;}
 
-@font-face {
- font-family: Etelka2;
- src: url("EtelkaMediumPro.eot") /* EOT file for IE */
-}
-@font-face {
- font-family: Etelka2;
- src: url("EtelkaMediumPro.ttf") /* TTF file for CSS3 browsers */
-}
+
 @font-face {
  font-family: Minion;
  src: url("Minion.eot") /* EOT file for IE */
@@ -1089,23 +1082,23 @@ font-family: Etelka2;
 font-family: Etelka2;
 }
 
-.post-content h1 { font-size: 2em;font-family: Etelka2; }
+.post-content h1 { font-size: 2em; }
 
-.post-content h2 { font-size: 1.8em;font-family: Etelka2; }
+.post-content h2 { font-size: 1.8em; }
 
-.post-content h3 { font-size: 1.6em;font-family: Etelka2; }
+.post-content h3 { font-size: 1.6em; }
 
-.post-content h4 { font-family: Etelka2;
+.post-content h4 { 
 	font-size: 1.4em; 
 	font-weight: 400;
 }
 
-.post-content h5 { font-family: Etelka2;
+.post-content h5 { 
 	font-size: 1.2em; 
 	font-weight: 400;
 }
 
-.post-content h6 {font-family: Etelka2;
+.post-content h6 {
 	margin-bottom: 15px;
 	font-size: 0.9em;
 	font-weight: 400;
@@ -1404,6 +1397,7 @@ img.alignnone,
 .post-content input[type="text"],
 .post-content input[type="tel"],
 .post-content input[type="url"],
+.post-content input[type="email"],
 .post-content input[type="password"],
 .post-content textarea {
 	width: 100%;

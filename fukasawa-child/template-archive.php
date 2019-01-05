@@ -38,10 +38,18 @@ Template Name: Archive Template
 			        'posts_per_page'=> '11',
 	                'order' => 'ASC',
 	                'orderby' => 'date',
-					));	// select only cislo 								 
-			//echo $paged;
+					));	// select only cislo 		
+            // fix for new year when there are no issues belonging to such year (yeah I know it sucks, but it's quite common with this journal)
+		    if ($wp_query->found_posts == 0 && $paged == intval(date("Y"))) {
+              $wp_query = new WP_Query(array(
+			  		'category_name' => 'cislo',
+			  		'tag' => ''.($paged-1),	
+			        'posts_per_page'=> '11',
+	                'order' => 'ASC',
+	                'orderby' => 'date',
+					));	
+			}
 			echo $wp_query->query_vars["tag"];   
-		
 			
             /*if ( "1" < $wp_query->max_num_pages ) :*/ ?>
 			
@@ -99,12 +107,7 @@ Template Name: Archive Template
 			if (($counter % 4) == 1 ){
 			  echo '<div class="section group" style="width:100%">';
 			} ?>
-			<?php get_template_part( 'content-archiv', get_post_format() ); ?>
-		  	<?php foreach(get_the_tags() as $tag){
-			  if ($tag->slug == "dvojcislo") {
-			  	$counter++;
-			  }
-			}?>
+			<?php get_template_part( 'content-archiv', get_post_format() ); ?>		  	
 			<?php if (($counter % 4) == 0 || $wp_query->found_posts == $counter){
 			  echo '</div> <!-- section group -->';
 			}
