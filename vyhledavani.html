@@ -101,8 +101,8 @@ return `<div class="archive-nav">
         </div>`
 }
 
-render_post_result = function(post_id, link, name, excerpt, tags, media){
-let media_text = (media) ? `<a class="featured-media" title="${name}" href="${link}"><img width="240" height="240" src="${media[0]}" class="attachment-post-thumb size-post-thumb wp-post-image" alt="" srcset="${media[0]} 240w" sizes="(max-width: 240px) 100vw, 240px">				
+render_post_result = function(post_id, link, name, excerpt, tags, url_img){
+let media_text = (url_img) ? `<a class="featured-media" title="${name}" href="${link}"><img width="240" height="240" src="${url_img}" class="attachment-post-thumb size-post-thumb wp-post-image" alt="" srcset="${url_img} 240w" sizes="(max-width: 240px) 100vw, 240px">				
         </a>` : ``
 let tags_text = `${tags.map((t) => `<a>${(parseInt(t)) ? `#` : ``}${t}</a>`).join(" ")}`
 return ` 
@@ -188,13 +188,12 @@ jQuery(document).ready( function() { setTimeout( function() { $blocks.masonry();
 }
 
 populate_posts = function(x){
-id_name = x.responseJSON.map((r)=>[r.id, r.link, r.title.rendered, r.excerpt.rendered,
-(r._embedded["wp:term"]) ? r._embedded["wp:term"].flatMap((a) => a.map((b) => b["name"])): null, (r._embedded["wp:featuredmedia"]) ? r._embedded["wp:featuredmedia"].map((a) => a.source_url): null])
+id_name = x.responseJSON.map((r)=>[r.ID, r.link, r.title, r.excerpt, r.tags.concat(r.categories), (r.url_img) ? r.url_img : null])
 jQuery(".spinner").hide()
 jQuery("#posts").show()
 jQuery("#posts").empty()
-for ([id, link, name, excerpt, tags, media] of id_name){
-  post = render_post_result(id, link, name, excerpt, tags, media)
+for ([id, link, name, excerpt, tags, url_img] of id_name){
+  post = render_post_result(id, link, name, excerpt, tags, url_img)
   jQuery("#posts").append(post) 
 }
 if (id_name.length == 0){
@@ -221,15 +220,17 @@ return links_dict
 jQuery('#search_form').on('submit', function(e){
 // validation code here
 e.preventDefault();
-tags = []
+cislo = []
+jazyk = []
+rok = []
 for(x of jQuery("[id^=jazyk-]:checked")){
-  tags.push(jQuery(x).attr("id").split("-")[1])
+  jazyk.push(jQuery(x).attr("id").split("-")[1])
 }
 for(x of jQuery("[id^=cislo-]:checked")){
-  tags.push(jQuery(x).attr("id").split("-")[1])
+  cislo.push(jQuery(x).attr("id").split("-")[1])
 }
 for(x of jQuery("[id^=rok-]:checked")){
-  tags.push(jQuery(x).attr("id").split("-")[1])
+  rok.push(jQuery(x).attr("id").split("-")[1])
 }
 
 categories = []
@@ -238,10 +239,12 @@ for(x of jQuery("[id^=rubrika-]:checked")){
 }
 search_q = jQuery("#text_search").val()
 
-query = "https://beta.svetovka.cz/wp-json/wp/v2/posts?per_page=10&_embed"
-query += (tags.length > 0) ? "&tags="+tags.join(",") : ""
-query += (categories.length > 0) ? "&categories="+categories.join(",") : ""
-query += (search_q) ? `&search=${search_q}` : ""
+query = "https://beta.svetovka.cz/wp-json/plav/v1/search/"
+query += `text=${search_q}`
+query += `&rok=${(rok.length > 0) ? rok.join(",") : ""}`
+query += `&cislo=${(cislo.length > 0) ? cislo.join(",") : ""}`
+query += `&jazyk=${(jazyk.length > 0) ? jazyk.join(",") : ""}`
+query += `&rubrika=${(categories.length > 0) ? categories.join(",") : ""}`
 jQuery(".spinner").show()
 get_data(query, function(x) {
     populate_posts(x)

@@ -2,16 +2,6 @@
 
 	<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 	
-		<?php if ( has_post_thumbnail() ) : ?>
-		
-			<a class="featured-media" title="<?php the_title_attribute(); ?>" href="<?php the_permalink(); ?>">	
-				
-				<?php the_post_thumbnail('post-thumb'); ?>
-				
-			</a> <!-- /featured-media -->
-				
-		<?php endif; ?>
-		
 		<?php 
 			$post_title = get_the_title();
 			if ( !empty( $post_title ) ) : 
@@ -54,6 +44,15 @@
 			<?php the_excerpt(); ?>
 		
 		</div>
+		<?php if ( has_post_thumbnail() ) : ?>
+		
+			<a class="featured-media" title="<?php the_title_attribute(); ?>" href="<?php the_permalink(); ?>">	
+				
+				<?php the_post_thumbnail('post-thumb'); ?>
+				
+			</a> <!-- /featured-media -->
+				
+		<?php endif; ?>
 		
 		<?php if ( empty( $post_title ) ) : ?>
 			    

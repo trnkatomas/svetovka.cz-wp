@@ -626,35 +626,154 @@ function print_filters_for( $hook = '' ) {
 // TODO fix this accoring to this function
 // https://developer.wordpress.org/rest-api/extending-the-rest-api/adding-custom-endpoints/
 
-function my_awesome_func( $data ) {
-  $posts = get_posts( array(
-    'tag__and' => array( 32, 73 )   
-  ) );
- 
-  if ( empty( $posts ) ) {
-    return null;
+function intersect_map($a, $b){
+  $result = array();
+  foreach($a as $key => $value){
+    if (array_key_exists($key, $b)){
+      $result[$key] = true;
+    }
   }
- 
+  return $result;
+}
+
+function union_map($a, $b){
+  $result = array();
+  foreach($a as $key => $value){
+    $result[$key] = true;    
+  }
+  foreach($b as $key => $value){
+    $result[$key] = true;    
+  }
+  return $result;
+}
+
+function search_ids($keyword, $term){
+  $ids = [];
+  $tags_in = array(
+  	$keyword => $term,
+  	"posts_per_page" => -1
+  );    
+  $posts_query = new WP_Query( );
+  $query_results = $posts_query->query($tags_in);     
+  foreach ($query_results as $post){
+    $ids[$post->ID] = true;
+  }    
+  return $ids;
+}
+
+function my_awesome_func( $data ) {
+  $fulltext = $data['text'];
+  $years = $data['rok'];
+  $issues = $data['cislo'];
+  $languages = $data['jazyk'];
+  $cat = $data['rubrika'];
+    
+  $post_ids = array();
+  if (explode(",", $years)[0]){
+  	$rok_ids = search_ids("tag__in", 
+  						explode(",", $years));
+  	$post_ids = ($post_ids) ? intersect_map($rok_ids, $post_ids) :  union_map($rok_ids,  $post_ids);
+  }
+  if (explode(",", $issues)[0]){
+  	$cislo_ids = search_ids("tag__in",
+  						  explode(",", $issues));
+  	$post_ids = ($post_ids) ? intersect_map($cislo_ids, $post_ids) : union_map($post_ids, $cislo_ids);
+  }
+  if ($fulltext) {
+  	$fulltext_ids = search_ids("s", $fulltext);
+  	$post_ids = ($post_ids) ? intersect_map($fulltext_ids, $post_ids) : union_map($post_ids, $fulltext_ids);    
+  }
+  if (explode(",", $languages)[0]){    
+  	$jazyk_ids = search_ids("tag__in", explode(",", $languages));
+    $post_ids = ($post_ids) ? intersect_map($jazyk_ids, $post_ids) : union_map($post_ids, $jazyk_ids);
+  }
+  if (explode(",", $cat)[0]){
+  	$cat_ids = search_ids("category__in", explode(",", $cat));
+  	$post_ids = ($post_ids) ? intersect_map($cat_ids, $post_ids) : union_map($post_ids, $cat_ids);
+  }  
+  if ($post_ids){
+  	$query_args = array("posts_per_page" => 10,
+  					  "post__in" => array_keys($post_ids));
+  	$posts_query = new WP_Query( );
+  	$query_results = $posts_query->query($query_args);
+  }else{
+    $query_results = array();
+  }
+  
   $results = [];
-  foreach($posts as $post) {
+  
+  foreach($query_results as $post) {   
     setup_postdata( $post );
     $excerpt = apply_filters( 'the_excerpt', apply_filters( 'get_the_excerpt', $post->post_excerpt, $post ) );
+    $tags = wp_get_post_tags( $post->ID, array('fields' => 'slugs'));
+    $categories = wp_get_post_categories( $post->ID, array('fields' => 'names'));
+    $img_url = wp_get_attachment_url( get_post_thumbnail_id($post->ID) );
     $p = array("ID"=> $post->ID,
                "excerpt"=> $excerpt,
                "title" => get_the_title( $post->ID ),
+               'tags' => $tags,
+    		   'url_img' => $img_url,
+    		   'categories' => $categories,
     		   "link" => get_permalink( $post->ID ));
     $results[] = $p;
   }
+  $page = (int) ($query_args['page']) ? $query_args['page'] : 1;
+  $total_posts = $posts_query->found_posts;
+  $max_pages = ceil( $total_posts / (int) $posts_query->query_vars['posts_per_page'] );
+  $response = rest_ensure_response( $results );
+  $response->header( 'X-WP-Total', (int) $total_posts );
+  $response->header( 'X-WP-TotalPages', (int) $max_pages ); 
+  $request_params = "/text=".$fulltext."&rok=".$years."&cislo=".$issues."&jazyk=".$languages."&rubrika=".$cat;
+  $base = rest_url( "plav/v1/search" ) . $request_params;
+  if ( $page > 1 ) {
+    $prev_page = $page - 1;
+    if ( $prev_page > $max_pages ) {
+      $prev_page = $max_pages;
+    }
+    $prev_link = add_query_arg( 'page', $prev_page, $base );
+    $response->link_header( 'prev', $prev_link );
+  }
+  if ( $max_pages > $page ) {
+    $next_page = $page + 1;
+    $next_link = add_query_arg( 'page', $next_page, $base );
+    $response->link_header( 'next', $next_link );
+  }
   
-  //$response = new WP_REST_Response( $posts );
-  //$response->header( 'Location', 'http://example.com/' );
-  return $results;
+  return $response;
 }
 
 add_action( 'rest_api_init', function () {
-  register_rest_route( 'myplugin/v1', '/author/(?P<id>\d+)', array(
+  $route = "/search/text=(?P<text>[a-zA-Z,0-9 ]*)&rok=(?P<rok>[,0-9]*)&cislo=(?P<cislo>[0-9,]*)&jazyk=(?P<jazyk>[0-9,]*)&rubrika=(?P<rubrika>[0-9,]*)";
+  register_rest_route( 'plav/v1', $route, array(
     'methods' => 'GET',
     'callback' => 'my_awesome_func',
+    'args' => array(
+  	  'text' => array(
+        'validate_callback' => function($param, $request, $key) {
+          return is_string( $param );
+        }
+      ),
+      'rok' => array(
+        'validate_callback' => function($param, $request, $key) {
+          return is_string( $param );
+        }
+      ),
+  	  'cislo' => array(
+        'validate_callback' => function($param, $request, $key) {
+          return is_string( $param );
+        }
+      ),
+  	  'rubrika' => array(
+        'validate_callback' => function($param, $request, $key) {
+          return is_string( $param );
+        }
+      ),
+     'jazyk' => array(
+        'validate_callback' => function($param, $request, $key) {
+          return is_string( $param );
+        }
+      ),
+    ),
   ) );
 } );
 
