@@ -665,7 +665,7 @@ function my_awesome_func( $data ) {
   $fulltext = $data['text'];
   $years = $data['rok'];
   $issues = $data['cislo'];
-  $languages = $data['jazyk'];
+  $languages = $data['tag'];
   $cat = $data['rubrika'];
     
   $post_ids = array();
@@ -723,7 +723,7 @@ function my_awesome_func( $data ) {
   $response = rest_ensure_response( $results );
   $response->header( 'X-WP-Total', (int) $total_posts );
   $response->header( 'X-WP-TotalPages', (int) $max_pages ); 
-  $request_params = "/text=".$fulltext."&rok=".$years."&cislo=".$issues."&jazyk=".$languages."&rubrika=".$cat;
+  $request_params = "/text=".$fulltext."&rok=".$years."&cislo=".$issues."&tag=".$languages."&rubrika=".$cat;
   $base = rest_url( "plav/v1/search" ) . $request_params;
   if ( $page > 1 ) {
     $prev_page = $page - 1;
@@ -743,7 +743,7 @@ function my_awesome_func( $data ) {
 }
 
 add_action( 'rest_api_init', function () {
-  $route = "/search/text=(?P<text>[a-zA-Z,0-9 ]*)&rok=(?P<rok>[,0-9]*)&cislo=(?P<cislo>[0-9,]*)&jazyk=(?P<jazyk>[0-9,]*)&rubrika=(?P<rubrika>[0-9,]*)";
+  $route = "/search/text=(?P<text>[a-zA-Z,0-9 ]*)&rok=(?P<rok>[,0-9]*)&cislo=(?P<cislo>[0-9,]*)&tag=(?P<tag>[0-9,]*)&rubrika=(?P<rubrika>[0-9,]*)";
   register_rest_route( 'plav/v1', $route, array(
     'methods' => 'GET',
     'callback' => 'my_awesome_func',
@@ -768,7 +768,7 @@ add_action( 'rest_api_init', function () {
           return is_string( $param );
         }
       ),
-     'jazyk' => array(
+     'tag' => array(
         'validate_callback' => function($param, $request, $key) {
           return is_string( $param );
         }
