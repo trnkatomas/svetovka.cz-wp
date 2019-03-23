@@ -550,6 +550,14 @@ function wpse_allowedtags() {
   		return '<script>,<style>,<br>,<b>,<em>,<i>,<ul>,<ol>,<li>,<p>,<video>,<audio>'; 
     }
 
+function strip_tag_with_content($str, $tags) {    
+    foreach ($tags as $tag) {
+        $re = '/<'. $tag .'>((.|\n)*?)<\/'. $tag .'>/m';
+        $str = preg_replace($re, '', $str);
+    }
+    return $str;
+}
+
 if ( ! function_exists( 'wpse_custom_wp_trim_excerpt' ) ) : 
 
     function wpse_custom_wp_trim_excerpt($wpse_excerpt) {
@@ -560,6 +568,7 @@ if ( ! function_exists( 'wpse_custom_wp_trim_excerpt' ) ) :
             $wpse_excerpt = strip_shortcodes( $wpse_excerpt );
             $wpse_excerpt = apply_filters('the_content', $wpse_excerpt);
             $wpse_excerpt = str_replace(']]>', ']]&gt;', $wpse_excerpt);
+          	$wpse_excerpt = strip_tag_with_content($wpse_excerpt, array('biblio'));
             $wpse_excerpt = strip_tags($wpse_excerpt, wpse_allowedtags()); /*IF you need to allow just certain tags. Delete if all tags are allowed */
 			// bruteforce remove <br> tag
             $wpse_excerpt = str_replace('<br>', '', $wpse_excerpt);
@@ -691,9 +700,11 @@ function my_awesome_func( $data ) {
   	$cat_ids = search_ids("category__in", explode(",", $cat));
   	$post_ids = ($post_ids) ? intersect_map($cat_ids, $post_ids) : union_map($post_ids, $cat_ids);
   }  
+  $page = (int) ($data['page']) ? $data['page'] : 1;
   if ($post_ids){
   	$query_args = array("posts_per_page" => 10,
-  					  "post__in" => array_keys($post_ids));
+  					  "post__in" => array_keys($post_ids),
+    					"paged" => $page);
   	$posts_query = new WP_Query( );
   	$query_results = $posts_query->query($query_args);
   }else{
@@ -717,7 +728,7 @@ function my_awesome_func( $data ) {
     		   "link" => get_permalink( $post->ID ));
     $results[] = $p;
   }
-  $page = (int) ($query_args['page']) ? $query_args['page'] : 1;
+  
   $total_posts = $posts_query->found_posts;
   $max_pages = ceil( $total_posts / (int) $posts_query->query_vars['posts_per_page'] );
   $response = rest_ensure_response( $results );
@@ -743,16 +754,12 @@ function my_awesome_func( $data ) {
 }
 
 add_action( 'rest_api_init', function () {
-  $route = "/search/text=(?P<text>[a-zA-Z,0-9 ]*)&rok=(?P<rok>[,0-9]*)&cislo=(?P<cislo>[0-9,]*)&tag=(?P<tag>[0-9,]*)&rubrika=(?P<rubrika>[0-9,]*)";
+  $route = "/search/rok=(?P<rok>[,0-9]*)&cislo=(?P<cislo>[0-9,]*)&tag=(?P<tag>[0-9,]*)&rubrika=(?P<rubrika>[0-9,]*)";
   register_rest_route( 'plav/v1', $route, array(
     'methods' => 'GET',
     'callback' => 'my_awesome_func',
     'args' => array(
-  	  'text' => array(
-        'validate_callback' => function($param, $request, $key) {
-          return is_string( $param );
-        }
-      ),
+  	  'text' => $request["text"],
       'rok' => array(
         'validate_callback' => function($param, $request, $key) {
           return is_string( $param );
@@ -773,6 +780,7 @@ add_action( 'rest_api_init', function () {
           return is_string( $param );
         }
       ),
+     'page' => $request["page"]
     ),
   ) );
 } );

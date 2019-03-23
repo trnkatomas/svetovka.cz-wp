@@ -2,9 +2,10 @@
 $dvojcislo = false;
 foreach(get_the_tags() as $tag){
   if ($tag->slug == "dvojcislo"){
-	$dvojcislo = true;
+	//$dvojcislo = true;
   }
 };?>
+
 <?php if ($dvojcislo) : ?>
 <div class="col span_2_of_4"> <!--"post-container-archiv">-->
 <?php else : ?>
@@ -38,18 +39,22 @@ foreach(get_the_tags() as $tag){
 		<div class="post-excerpt">
 			<div class="woocommerce columns-1">
 			<ul class="products columns-1">
-			<li class="post-3980 product type-product status-publish has-post-thumbnail product_cat-casopis product_tag-84 product_tag-106 instock shipping-taxable purchasable product-type-simple">
-			<!--span class="price"><span class="woocommerce-Price-amount amount">69,00<span class="woocommerce-Price-currencySymbol">Kč</span></span></span-->
-		
-			<a href="/obchod/?add-to-cart=<?php echo wc_get_product_id_by_sku(get_the_date('Y').'-'.get_the_date('m')); ?>" data-quantity="1" 
+			<?php
+				$product = wc_get_product( wc_get_product_id_by_sku(get_the_date('Y').'-'.get_the_date('m')) );
+				$cats = $product->get_category_ids();
+				$ebook_id = get_term_by( 'slug', "ebook", 'product_cat' );
+				$ebook = "";
+				if ($ebook_id) {
+                  $num = intval($ebook_id->term_id);
+                  $ebook = (in_array($num, $cats)) ? "ebook" : "";
+				}
+			?> 
+			<li class="product type-product status-publish has-post-thumbnail product-type-simple">	
+			<a <?php echo (($product->is_in_stock()) ? "href='/obchod/?add-to-cart={$product->get_id()}'": "#' style='pointer-events: none;'") ?> data-quantity="1" 
 				class="button product_type_simple add_to_cart_button ajax_add_to_cart"
 				data-product_id="<?php echo wc_get_product_id_by_sku(get_the_date('Y').'-'.get_the_date('m')); ?>" data-product_sku=""
-				aria-label="Přidat “Plav 01/2007” do košíku" rel="nofollow">
-				Koupit za
-				<?php
-					$product = wc_get_product( wc_get_product_id_by_sku(get_the_date('Y').'-'.get_the_date('m')) );
-					echo $product->get_regular_price();
-				?> Kč</a>
+				aria-label="Přidat číslo do košíku" rel="nofollow">
+               <?php echo ($product->is_in_stock()) ? "Koupit {$ebook} za {$product->get_regular_price()} Kč": "Vyprodano"; ?> </a>
 			</li>
 			</ul>
 			</div>

@@ -90,6 +90,7 @@ blockquote:before, blockquote:after {
 a { outline:none; }
 
 input[type=search] {
+   font-family: serif;
    -moz-appearance:none;
    -webkit-appearance:none;
 }
@@ -1389,11 +1390,6 @@ img.alignnone,
 	font-weight: 400;
 }
 
-.post-content input,
-.post-content textarea { 
-	font-family: 'Lato', sans-serif; 
-}
-
 .post-content input[type="text"],
 .post-content input[type="tel"],
 .post-content input[type="url"],
@@ -1739,9 +1735,6 @@ p.comment-form-author { margin-right: 5%; }
 	margin-left: 3px;
 }
 
-.comment-form input,
-.comment-form textarea { font-family: 'Lato', sans-serif; }
-
 .comment-form input[type="text"],
 .comment-form input[type="email"],
 .comment-form textarea {
@@ -1917,7 +1910,6 @@ p.comment-form-author { margin-right: 5%; }
 	border: none;
 	border-radius: 3px;
 	background: #eee;
-	font-family: 'Lato', sans-serif;
 	font-size: 0.95em;
 	color: #666;
 }

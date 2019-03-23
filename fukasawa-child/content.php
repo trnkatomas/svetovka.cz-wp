@@ -34,7 +34,9 @@
   					foreach($posttags as $tag) {
     					echo '<a>#'.$tag->name . '</a> '; 
   					}
-				}
+				} else {
+					echo '<a>publikováno '. get_the_time('j. F Y') .'</a> '; 
+		  		}
 			?>
 			</li>
 			</ul>
