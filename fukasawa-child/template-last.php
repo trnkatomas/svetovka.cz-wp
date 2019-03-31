@@ -8,20 +8,7 @@ Template Name: Last Template
 
 <div class="content thin">
 	<?php 
-	/*$args = array(
-    	'numberposts' => 1,
-    	'offset' => 0,
-    	'category' => 0,
-	  	'category_name' => 'cislo',
-	    'orderby' => 'post_date',//'post_modified',
-    	'order' => 'DESC',
-    	'post_type' => 'post',
-    	'post_status' => 'publish', 
-    	'suppress_filters' => true );
-
-	$recent_posts = wp_get_recent_posts( $args, ARRAY_A );
-	*/
-
+	
 	$wp_query = new WP_Query(array(
 		'category_name' => 'cislo',
 		"numberposts" => 1,
@@ -29,11 +16,9 @@ Template Name: Last Template
 		"category" => 0,
 		"post_type" => "post",
 		'order' => 'DESC',
-		'orderby' => 'post_date',
-		//"supress_filters" => true,
+		'orderby' => 'post_date',		
 		'posts_per_page' => 1
-	));	// select only cislo 								 
-	//echo $paged;
+	));	
 	
 	?>
 											        

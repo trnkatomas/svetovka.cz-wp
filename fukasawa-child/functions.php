@@ -542,6 +542,28 @@ function wpdocs_custom_excerpt_length( $length ) {
 }
 add_filter( 'excerpt_length', 'wpdocs_custom_excerpt_length', 999 );
 
+function get_year_and_month_from_post_tag($post_id) {
+	/* month regex */	
+	$month_re = "/^(?P<month>[1-9]|1[012])$/";
+	/* year regex */	
+	$year_re = "/^(?P<year>20\d\d)$/";
+	foreach (wp_get_post_tags( $post_id) as $tag){
+		$tag_name = $tag->slug;		
+		if (!$month && preg_match($month_re, $tag_name, $match)){
+		  $month = $match['month'];
+		};
+		if (!$year && preg_match($year_re, $tag_name, $match)){
+		  $year = $match['year'];
+		};
+  	};
+    if ($month && $year){
+      	return sprintf("%s-%02d", $year, intval($month));
+    } else {
+      	return "";
+  	}
+}
+add_filter('get_the_content', 'get_year_and_month_from_post_tag'); 
+
 // God bless this awsome WP hacking guy
 // https://wordpress.stackexchange.com/questions/141125/allow-html-in-excerpt
 function wpse_allowedtags() {

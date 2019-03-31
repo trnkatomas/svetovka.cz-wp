@@ -35,8 +35,8 @@
     					echo '<a>#'.$tag->name . '</a> '; 
   					}
 				} else {
-					echo '<a>publikováno '. get_the_time('j. F Y') .'</a> '; 
-		  		}
+                  		echo '<a>'. get_the_time('j. F Y') .'</a> '; 
+				}
 			?>
 			</li>
 			</ul>
@@ -47,7 +47,7 @@
 		
 		</div>
 		<?php if ( has_post_thumbnail() ) : ?>
-		
+			<br>
 			<a class="featured-media" title="<?php the_title_attribute(); ?>" href="<?php the_permalink(); ?>">	
 				
 				<?php the_post_thumbnail('post-thumb'); ?>

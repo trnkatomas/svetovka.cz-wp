@@ -3,7 +3,7 @@
 <form id="search_form">
         <div>
         <span class="taxolabel">Fulltextové vyhledávání</span><br>
-<input id="text_search" type="text" name="text_search" class="textinput" value=""></div>
+        <input style="font-family:serif" id="text_search" type="text" name="text_search" class="textinput" value=""></div>
         <div class="rok advanced_search">
         <span class="taxolabel">Rok</span><br>
         </div>
@@ -16,7 +16,7 @@
         <span class="taxolabel">Vybrané štítky</span><br>
         </div>
         <div style="clear:both"></div>
-        <div class="tags advanced_search">
+        <div class="tags advanced_search" style="font-family:serif">
         <span class="taxolabel">Štítky</span><br>
 <select id="sl" multiple style="width:100%" placeholder="Štítky...">
 </select>
@@ -132,10 +132,9 @@ let category_text = `${categories.map((t) => `<a>${t}</a>`).join(" ")}`
 return ` 
 <div class="post-container">
 	<div id="post-${post_id}" class="post-${post_id} type-post status-publish format-standard hentry post">
-                        ${media_text}
-			<div class="post-header">
-			    <h2 class="post-title"><a href="${link}" title="${name}">${name}</a></h2>
-			</div> <!-- /post-header -->
+                <div class="post-header">
+		   <h2 class="post-title"><a href="${link}" title="${name}">${name}</a></h2>
+		</div> <!-- /post-header -->
                 <div class="post-excerpt">
 		   <ul>
                       <li class="post-tags">${category_text} ${tags_text}</li>
@@ -143,7 +142,8 @@ return `
 		</div>
 		<div class="post-excerpt">
                     ${excerpt}
-		</div>
+		</div><br>
+               ${media_text}
 	</div> <!-- /post -->
 </div> <!-- /post-container -->`
 }
@@ -158,8 +158,9 @@ jQuery("#wrapper").after(`
 `)
 
  get_data("https://beta.svetovka.cz/wp-json/wp/v2/tags?per_page=100", function(x) {
-     let [cisla, roky, jazyky] = [[],[],[]]
+     let [cisla, roky, jazyky, other] = [[], [], [], []]
      id_name = x.responseJSON.map((r)=>[r.id, r.name])
+     let include = ["Afrika", "Amerika", "angličtina", "arabština", "Asie", "čínština", "drama", "dvojčíslo", "Evropa", "francouzština", "italština", "lidská práva", "literární žánry", "němčina", "non-fiction", "oddechová literatura", "osobnosti překladu", "poezie", "překladatelská soutěž Jiřího Levého", "ruština", "španělština", "tematické číslo", "ženy"]
      for (elem of id_name) {
          if (elem[1].match(/\d{4}/g)){
              roky.push(elem)
@@ -169,21 +170,22 @@ jQuery("#wrapper").after(`
              cisla.push(elem)
              continue
          }
-         else{
+         if (include.includes(elem[1])){
              jazyky.push(elem)
              continue
          }
+         other.push(elem)
      }  
      cisla.sort((a,b) => (parseInt(a[1]) - parseInt(b[1])))
      jQuery(".cislo").append(cisla.map(([id, name]) => render_checkbox(name, id, "cislo")).join(""))
      jQuery(".rok").append(roky.map(([id, name]) => render_checkbox(name, id, "rok")).join(""))
      jQuery(".jazyky").append(jazyky.map(([id, name]) => render_checkbox(name, id, "jazyk")).join(""))
-     jQuery("#sl").append(jazyky.map(([id, name]) => render_option(name, id, null)).join(""))
+     jQuery("#sl").append(other.map(([id, name]) => render_option(name, id, null)).join(""))
  })
 
 get_data("https://beta.svetovka.cz/wp-json/wp/v2/categories?per_page=100", function(x) {
      let categories = []
-     let exclude = ["eshop", "frontpage", "slide", "Uncategorized"]
+     let exclude = ["eshop", "frontpage", "slide", "Uncategorized", "Úvodník"]
      id_name = x.responseJSON.map((r)=>[r.id, r.name])
      for (elem of id_name) {
          if (exclude.indexOf(elem[1]) >= 0 ){
@@ -266,11 +268,12 @@ jQuery('#search_form').on('submit', function(e){
    search_q = jQuery("#text_search").val()
 
    query = "https://beta.svetovka.cz/wp-json/plav/v1/search/"
-   query += `text=${search_q}`
-   query += `&rok=${(rok.length > 0) ? rok.join(",") : ""}`
+   query += `rok=${(rok.length > 0) ? rok.join(",") : ""}`
    query += `&cislo=${(cislo.length > 0) ? cislo.join(",") : ""}`
    query += `&tag=${(jazyk.length > 0) ? jazyk.join(",") : ""}`
-   query += `&rubrika=${(categories.length > 0) ? categories.join(",") : ""}`
+   query += `&rubrika=${(categories.length > 0) ? 
+   categories.join(",") : ""}`
+   query += `?text=${search_q}`
    jQuery(".spinner").show()
    get_data(query, function(x) {
         populate_posts(x)

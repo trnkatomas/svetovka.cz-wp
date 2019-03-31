@@ -40,13 +40,14 @@ foreach(get_the_tags() as $tag){
 			<div class="woocommerce columns-1">
 			<ul class="products columns-1">
 			<?php
-				$product = wc_get_product( wc_get_product_id_by_sku(get_the_date('Y').'-'.get_the_date('m')) );
+				$for_sku = get_year_and_month_from_post_tag($post->ID);
+				$product = wc_get_product( wc_get_product_id_by_sku($for_sku) );                             
 				$cats = $product->get_category_ids();
 				$ebook_id = get_term_by( 'slug', "ebook", 'product_cat' );
 				$ebook = "";
 				if ($ebook_id) {
-                  $num = intval($ebook_id->term_id);
-                  $ebook = (in_array($num, $cats)) ? "ebook" : "";
+						$num = intval($ebook_id->term_id);
+						$ebook = (in_array($num, $cats)) ? "e-book" : "";
 				}
 			?> 
 			<li class="product type-product status-publish has-post-thumbnail product-type-simple">	
@@ -54,7 +55,7 @@ foreach(get_the_tags() as $tag){
 				class="button product_type_simple add_to_cart_button ajax_add_to_cart"
 				data-product_id="<?php echo wc_get_product_id_by_sku(get_the_date('Y').'-'.get_the_date('m')); ?>" data-product_sku=""
 				aria-label="Přidat číslo do košíku" rel="nofollow">
-               <?php echo ($product->is_in_stock()) ? "Koupit {$ebook} za {$product->get_regular_price()} Kč": "Vyprodano"; ?> </a>
+               <?php echo ($product->is_in_stock()) ? "Koupit {$ebook} za {$product->get_price()} Kč": "Vyprodano"; ?> </a>
 			</li>
 			</ul>
 			</div>
