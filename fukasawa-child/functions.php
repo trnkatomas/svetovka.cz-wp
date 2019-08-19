@@ -547,6 +547,8 @@ function get_year_and_month_from_post_tag($post_id) {
 	$month_re = "/^(?P<month>[1-9]|1[012])$/";
 	/* year regex */	
 	$year_re = "/^(?P<year>20\d\d)$/";
+	$month = 0;
+	$year = 0;
 	foreach (wp_get_post_tags( $post_id) as $tag){
 		$tag_name = $tag->slug;		
 		if (!$month && preg_match($month_re, $tag_name, $match)){
@@ -781,7 +783,10 @@ add_action( 'rest_api_init', function () {
     'methods' => 'GET',
     'callback' => 'my_awesome_func',
     'args' => array(
-  	  'text' => $request["text"],
+        'validate_callback' => function($param, $request, $key) {
+          return is_string( $param );
+        }
+      ),
       'rok' => array(
         'validate_callback' => function($param, $request, $key) {
           return is_string( $param );
@@ -802,7 +807,11 @@ add_action( 'rest_api_init', function () {
           return is_string( $param );
         }
       ),
-     'page' => $request["page"]
+     'page' => array(
+        'validate_callback' => function($param, $request, $key) {
+          return is_string( $param );
+        }
+      ),
     ),
   ) );
 } );
