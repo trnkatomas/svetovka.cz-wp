@@ -1,5 +1,5 @@
-<link href="//beta.svetovka.cz/wp-content/themes/fukasawa/css/select2.min.css" rel="stylesheet" />
-<script src="//beta.svetovka.cz/wp-content/themes/fukasawa/js/select2.min.js"></script>
+<link href="//www.svetovka.cz/wp-content/themes/fukasawa/css/select2.min.css" rel="stylesheet" />
+<script src="//www.svetovka.cz/wp-content/themes/fukasawa/js/select2.min.js"></script>
 <form id="search_form">
         <div>
         <span class="taxolabel">Fulltextové vyhledávání</span><br>
@@ -68,6 +68,54 @@
 }
 </style>
 <script>
+window.onpopstate = function(event) {   
+    if (window.location.href.indexOf("https://www.svetovka.cz/vyhledavani/") == 0) {
+        jQuery(`[id^=rubrika-]`).attr("checked", false)
+        jQuery(`[id^=rok-]`).attr("checked", false)
+        jQuery(`[id^=cislo-]`).attr("checked", false)
+        jQuery(`[id^=jazyk-]`).attr("checked", false)
+        jQuery(".posts").hide()
+        if (event.state != null && "categories" in event.state) {
+            jQuery(".spinner").show()
+            set_search_params(event.state["jazyk"], event.state["rok"], event.state["cislo"], event.state["categories"]) 
+            get_data(event.state.query, function(x) {
+                populate_posts(x)
+            })
+        } else {
+          jQuery("#posts").empty().show()  
+          initFunction()        
+          jQuery(".archive-nav").empty()
+          jQuery(".advanced_search").toggle()
+        }
+    }
+}
+window.onload = function(event) {
+    const regex = /^https:\/\/www\.svetovka\.cz\/vyhledavani\/#rok=(?<rok>([0-9]+,?)*)&cislo=(?<cislo>([0-9]+,?)*)&tag=(?<tag>([0-9]+,?)*)&rubrika=(?<rubrika>([0-9]+,?)*)\?text=(?<text>.*)/gm;
+    let m;
+    m = regex.exec(window.location.href)
+    if (m !== null) {
+     let cislo = m.groups["cislo"].split(",").filter((x) => x.length > 0).map((x) => parseInt(x))
+     let rok = m.groups["rok"].split(",").filter((x) => x.length > 0).map((x) => parseInt(x))
+     let categories = m.groups["rubrika"].split(",").filter((x) => x.length > 0).map((x) => parseInt(x))
+     let jazyk = m.groups["tag"].split(",").filter((x) => x.length > 0).map((x) => parseInt(x))
+     let text = m.groups["text"]
+     set_search_params(jazyk, rok, cislo, categories) 
+     let query = "https://www.svetovka.cz/wp-json/plav/v1/search/"
+     query += `rok=${(rok.length > 0) ? rok.join(",") : ""}`
+     query += `&cislo=${(cislo.length > 0) ? cislo.join(",") : ""}`
+     query += `&tag=${(jazyk.length > 0) ? jazyk.join(",") : ""}`
+     query += `&rubrika=${(categories.length > 0) ? 
+     categories.join(",") : ""}`
+     query += `?text=${text}`
+
+     jQuery(".spinner").show()
+     get_data(query, function(x) {
+        populate_posts(x)
+     })
+    }
+}
+
+
 jQuery(".advanced_search").hide()
 jQuery("#sl").select2()
 jQuery("#advance_search_btn").on('click', function(){
@@ -98,12 +146,55 @@ jQuery("body").on("click", "a.pag_href", function(event){
     event.preventDefault()
     jQuery(".posts").hide()
     jQuery(".spinner").show()
+    let [cislo, jazyk, rok, categories, search_q] = get_input_data()
+    history.pushState({"query":this.href, "rok":rok, "cislo":cislo, "jazyk":jazyk, "categories":categories}, "", "#"+this.href.split("/")[7])
     get_data(this.href, function(x) {
         populate_posts(x)
    })
 })
 
 const pagination_regex = /\<([^\s]+)\>;\s+rel="(\w+)"/gm;
+
+get_input_data = function() {
+    cislo = []
+    jazyk = []
+    rok = []
+    for(x of jQuery("[id^=jazyk-]:checked")){
+      jazyk.push(jQuery(x).attr("id").split("-")[1])   
+   }
+   if (jQuery("#sl").val() != null) {
+      jazyk.push(jQuery("#sl").val())
+   }
+   for(x of jQuery("[id^=cislo-]:checked")){
+      cislo.push(jQuery(x).attr("id").split("-")[1])
+   }
+   for(x of jQuery("[id^=rok-]:checked")){
+      rok.push(jQuery(x).attr("id").split("-")[1])
+   }
+
+   categories = []
+   for(x of jQuery("[id^=rubrika-]:checked")){
+      categories.push(jQuery(x).attr("id").split("-")[1])
+   }
+   search_q = jQuery("#text_search").val()
+   return [cislo, jazyk, rok, categories, search_q]
+}
+
+set_search_params = function(jazyk, rok, cislo, categories) {
+            jQuery("#sl").val([jazyk]).trigger("change");
+            for (let category of categories){
+                jQuery(`[id^=rubrika-${category}]`).attr("checked", true)
+            }
+            for (let r of rok){
+                jQuery(`[id^=rok-${r}]`).attr("checked", true)
+            }
+            for (let c of cislo){
+                jQuery(`[id^=cislo-${c}]`).attr("checked", true)
+            }
+            for (let j of jazyk){
+                jQuery(`[id^=jazyk-${j}]`).attr("checked", true)
+            }
+}
 
 render_checkbox = function(name, id, cat){
     return `<span class="switch">
@@ -157,7 +248,7 @@ jQuery("#wrapper").after(`
 </div><!-- results -->
 `)
 
- get_data("https://beta.svetovka.cz/wp-json/wp/v2/tags?per_page=100", function(x) {
+ get_data("https://www.svetovka.cz/wp-json/wp/v2/tags?per_page=100", function parseTags(x) {
      let [cisla, roky, jazyky, other] = [[], [], [], []]
      id_name = x.responseJSON.map((r)=>[r.id, r.name])
      let include = ["Afrika", "Amerika", "angličtina", "arabština", "Asie", "čínština", "drama", "dvojčíslo", "Evropa", "francouzština", "italština", "lidská práva", "literární žánry", "němčina", "non-fiction", "oddechová literatura", "osobnosti překladu", "poezie", "překladatelská soutěž Jiřího Levého", "ruština", "španělština", "tematické číslo", "ženy"]
@@ -181,9 +272,13 @@ jQuery("#wrapper").after(`
      jQuery(".rok").append(roky.map(([id, name]) => render_checkbox(name, id, "rok")).join(""))
      jQuery(".jazyky").append(jazyky.map(([id, name]) => render_checkbox(name, id, "jazyk")).join(""))
      jQuery("#sl").append(other.map(([id, name]) => render_option(name, id, null)).join(""))
+     let pages = get_links_dict(x.getResponseHeader("link"))
+     if ('next' in pages) {
+        get_data(pages['next'], parseTags)
+     }
  })
 
-get_data("https://beta.svetovka.cz/wp-json/wp/v2/categories?per_page=100", function(x) {
+get_data("https://www.svetovka.cz/wp-json/wp/v2/categories?per_page=100", function(x) {
      let categories = []
      let exclude = ["eshop", "frontpage", "slide", "Uncategorized", "Úvodník"]
      id_name = x.responseJSON.map((r)=>[r.id, r.name])
@@ -247,33 +342,15 @@ get_links_dict = function(data){
 jQuery('#search_form').on('submit', function(e){
     // validation code here
     e.preventDefault();
-    cislo = []
-    jazyk = []
-    rok = []
-    for(x of jQuery("[id^=jazyk-]:checked")){
-      jazyk.push(jQuery(x).attr("id").split("-")[1])   
-   }
-   jazyk.push(jQuery("#sl").val())
-   for(x of jQuery("[id^=cislo-]:checked")){
-      cislo.push(jQuery(x).attr("id").split("-")[1])
-   }
-   for(x of jQuery("[id^=rok-]:checked")){
-      rok.push(jQuery(x).attr("id").split("-")[1])
-   }
-
-   categories = []
-   for(x of jQuery("[id^=rubrika-]:checked")){
-      categories.push(jQuery(x).attr("id").split("-")[1])
-   }
-   search_q = jQuery("#text_search").val()
-
-   query = "https://beta.svetovka.cz/wp-json/plav/v1/search/"
+   let [cislo, jazyk, rok, categories, search_q] = get_input_data()
+   query = "https://www.svetovka.cz/wp-json/plav/v1/search/"
    query += `rok=${(rok.length > 0) ? rok.join(",") : ""}`
    query += `&cislo=${(cislo.length > 0) ? cislo.join(",") : ""}`
    query += `&tag=${(jazyk.length > 0) ? jazyk.join(",") : ""}`
    query += `&rubrika=${(categories.length > 0) ? 
-   categories.join(",") : ""}`
+categories.join(",") : ""}`
    query += `?text=${search_q}`
+   history.pushState({"query":query, "rok":rok, "cislo":cislo,"jazyk":jazyk,"categories":categories}, "", "#"+query.split("/")[7])
    jQuery(".spinner").show()
    get_data(query, function(x) {
         populate_posts(x)
