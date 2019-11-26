@@ -90,15 +90,15 @@ window.onpopstate = function(event) {
     }
 }
 window.onload = function(event) {
-    const regex = /^https:\/\/www\.svetovka\.cz\/vyhledavani\/#rok=(?<rok>([0-9]+,?)*)&cislo=(?<cislo>([0-9]+,?)*)&tag=(?<tag>([0-9]+,?)*)&rubrika=(?<rubrika>([0-9]+,?)*)\?text=(?<text>.*)/gm;
+    const regex = /^https:\/\/www\.svetovka\.cz\/vyhledavani\/#rok=(([0-9]+,?)*)&cislo=(([0-9]+,?)*)&tag=(([0-9]+,?)*)&rubrika=(([0-9]+,?)*)\?text=(.*)/gm;
     let m;
     m = regex.exec(window.location.href)
-    if (m !== null) {
-     let cislo = m.groups["cislo"].split(",").filter((x) => x.length > 0).map((x) => parseInt(x))
-     let rok = m.groups["rok"].split(",").filter((x) => x.length > 0).map((x) => parseInt(x))
-     let categories = m.groups["rubrika"].split(",").filter((x) => x.length > 0).map((x) => parseInt(x))
-     let jazyk = m.groups["tag"].split(",").filter((x) => x.length > 0).map((x) => parseInt(x))
-     let text = m.groups["text"]
+    if (m !== null && m.length==10) {
+     let cislo = m[1].split(",").filter((x) => x.length > 0).map((x) => parseInt(x))
+     let rok = m[3].split(",").filter((x) => x.length > 0).map((x) => parseInt(x))
+     let categories = m[7].split(",").filter((x) => x.length > 0).map((x) => parseInt(x))
+     let jazyk = m[5].split(",").filter((x) => x.length > 0).map((x) => parseInt(x))
+     let text = m[9]
      set_search_params(jazyk, rok, cislo, categories) 
      let query = "https://www.svetovka.cz/wp-json/plav/v1/search/"
      query += `rok=${(rok.length > 0) ? rok.join(",") : ""}`
