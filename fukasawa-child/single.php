@@ -94,6 +94,9 @@
                                 $ebook = (in_array($num, $cats)) ? "e-book" : "";
 				             }
 					         $price = $product->get_price();
+                             if ( $product->get_regular_price() != $product->get_price() ){
+                               $price = '<strike>'.$product->get_regular_price().'</strike> '.$price;
+                             }
                              $prod_id = $product->get_id();
                              $insert_text = '<div class="woocommerce columns-1" style="margin-bottom: -200px;float: right;">';
 			                 $insert_text .= '<ul class="products columns-1">';
@@ -106,8 +109,12 @@
 						  	 $content = get_the_content();              
                              $tags = get_the_tags();
                              $tag_array = array();
+                             $issue_date_pattern = '/^\d+$/m';
                              foreach ($tags as $t) {
-                               $tag_array[] = $t->name;                               
+                               $m = preg_match($issue_date_pattern, $t->name, $matches, PREG_OFFSET_CAPTURE);
+                               if ($m) {
+                                   $tag_array[] = $t->name;
+                               }
                              }   
                              $categories = get_the_category();
                              $skip = false;
@@ -127,12 +134,14 @@
                              
                              while($custom_query->have_posts()) {
                               $custom_query->the_post();
-							 							  $content .= "<p><a style='float:right' href='".get_the_permalink(get_the_ID())."'>Zpět na číslo</a></p><br>";
+                              // TODO fix it should not link if oznameni
+							  $content .= "<p><a style='float:right' href='".get_the_permalink(get_the_ID())."'>Zpět na číslo</a></p><br>";
                             }
                              $custom_query->reset_postdata();
+                             wp_reset_query(); 
                            }
                             $content = apply_filters( 'the_content', $content );                                                         
-    												$content = str_replace( ']]>', ']]&gt;', $content );                             
+    						$content = str_replace( ']]>', ']]&gt;', $content );                             
                             echo $content;
                           }
 						}
