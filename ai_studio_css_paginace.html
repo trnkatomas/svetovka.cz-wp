@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    /* 1. Base Styles */
+    .pagination {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        gap: 5px;
+        justify-content: flex-end; /* Aligned Right */
+        font-family: sans-serif;
+    }
+
+    .page-item {
+        transition: all 0.2s;
+        /* Necessary for positioning the dots relative to the item */
+        position: relative; 
+        display: flex;
+        align-items: center;
+    }
+
+    .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+        height: 35px;
+        background: #f0f0f0;
+        text-decoration: none;
+        color: #333;
+        border-radius: 4px;
+        font-weight: bold;
+        z-index: 2; /* Ensure link sits above any visual noise */
+    }
+
+    .page-item.active .page-link {
+        background: #0073aa;
+        color: white;
+    }
+
+    /* =========================================
+       THE LOGIC
+       ========================================= */
+
+    /* DESKTOP (> 768px): Show everything */
+    @media (min-width: 768px) {
+        .page-item { display: block !important; }
+    }
+
+    /* MOBILE (< 768px): The Complex Filtering */
+    @media (max-width: 767px) {
+        
+        /* 1. Hide EVERYONE by default */
+        .page-item { display: none; }
+
+        /* 2. Un-hide the visible keys (First, Last, Active, Neighbors) */
+        .page-item:first-child,
+        .page-item:last-child,
+        .page-item.active,
+        .page-item.active + .page-item,
+        .page-item:has(+ .page-item.active) {
+            display: flex; /* Changed to flex to align dots */
+        }
+
+        /* -----------------------------------------------------
+           THE DOTS (...)
+           We attach dots to Item 1 (Right side) and Item 10 (Left side).
+           Then we hide them if the neighbors are close by.
+        ----------------------------------------------------- */
+
+        /* A. LEFT DOTS (Attached to Item 1) */
+        .page-item:first-child::after {
+            content: "...";
+            margin-left: 8px;
+            color: #666;
+            pointer-events: none; /* Non-clickable */
+        }
+
+        /* Hide Left Dots if: 
+           1. Item 1 is Active 
+           2. Item 2 is Active (Direct neighbor)
+           3. Item 3 is Active (Item 2 becomes visible neighbor)
+        */
+        .page-item:first-child.active::after,
+        .page-item:first-child:has(+ .active)::after,
+        .page-item:first-child:has(+ .page-item:has(+ .active))::after {
+            content: none;
+            display: none;
+        }
+
+        /* B. RIGHT DOTS (Attached to Last Item) */
+        .page-item:last-child::before {
+            content: "...";
+            margin-right: 8px;
+            color: #666;
+            pointer-events: none;
+        }
+
+        /* Hide Right Dots if:
+           We check the PARENT (.pagination) to see if items near the end are active.
+           Logic: If Last, 2nd-to-Last, or 3rd-to-Last are active -> No gap.
+        */
+        /* If Last Item is Active */
+        .pagination:has(.page-item:last-child.active) .page-item:last-child::before,
+        /* If 2nd to Last (9) is Active */
+        .pagination:has(.page-item:nth-last-child(2).active) .page-item:last-child::before,
+        /* If 3rd to Last (8) is Active */
+        .pagination:has(.page-item:nth-last-child(3).active) .page-item:last-child::before {
+            content: none;
+            display: none;
+        }
+    }
+
+</style>
+</head>
+<body>
+
+    <div style="padding: 20px; border: 1px dashed #ccc;">
+        <p><strong>Mobile View Simulation:</strong></p>
+        
+        <!-- CASE 1: Active is 5 (Dots on BOTH sides) -->
+        <p>Active: 5</p>
+        <ul class="pagination">
+            <li class="page-item"><a href="#" class="page-link">2005</a></li>
+            <li class="page-item"><a href="#" class="page-link">2006</a></li>
+            <li class="page-item"><a href="#" class="page-link">2007</a></li>
+            <li class="page-item"><a href="#" class="page-link">2008</a></li>
+            <li class="page-item active"><a href="#" class="page-link">2009</a></li>
+            <li class="page-item"><a href="#" class="page-link">2010</a></li>
+            <li class="page-item"><a href="#" class="page-link">2011</a></li>
+            <li class="page-item"><a href="#" class="page-link">2012</a></li>
+            <li class="page-item"><a href="#" class="page-link">2013</a></li>
+            <li class="page-item"><a href="#" class="page-link">2014</a></li>
+            <li class="page-item"><a href="#" class="page-link">2015</a></li>
+            <li class="page-item"><a href="#" class="page-link">2016</a></li>
+            <li class="page-item"><a href="#" class="page-link">2017</a></li>
+            <li class="page-item"><a href="#" class="page-link">2018</a></li>
+            <li class="page-item"><a href="#" class="page-link">2019</a></li>
+            <li class="page-item"><a href="#" class="page-link">2020</a></li>
+            <li class="page-item"><a href="#" class="page-link">2021</a></li>
+            <li class="page-item"><a href="#" class="page-link">2022</a></li>
+            <li class="page-item"><a href="#" class="page-link">2023</a></li>
+            <li class="page-item"><a href="#" class="page-link">2024</a></li>
+            <li class="page-item"><a href="#" class="page-link">2025</a></li>
+        </ul>
+
+        <hr>
+
+        <!-- CASE 2: Active is 2 (Gap only on RIGHT) -->
+        <p>Active: 2</p>
+        <ul class="pagination">
+            <li class="page-item"><a href="#" class="page-link">1</a></li>
+            <li class="page-item active"><a href="#" class="page-link">2</a></li>
+            <li class="page-item"><a href="#" class="page-link">3</a></li>
+            <li class="page-item"><a href="#" class="page-link">4</a></li>
+            <li class="page-item"><a href="#" class="page-link">5</a></li>
+            <li class="page-item"><a href="#" class="page-link">6</a></li>
+            <li class="page-item"><a href="#" class="page-link">7</a></li>
+            <li class="page-item"><a href="#" class="page-link">8</a></li>
+            <li class="page-item"><a href="#" class="page-link">9</a></li>
+            <li class="page-item"><a href="#" class="page-link">10</a></li>
+        </ul>
+
+         <hr>
+
+        <!-- CASE 3: Active is 9 (Gap only on LEFT) -->
+        <p>Active: 9</p>
+        <ul class="pagination">
+            <li class="page-item"><a href="#" class="page-link">1</a></li>
+            <li class="page-item"><a href="#" class="page-link">2</a></li>
+            <li class="page-item"><a href="#" class="page-link">3</a></li>
+            <li class="page-item"><a href="#" class="page-link">4</a></li>
+            <li class="page-item"><a href="#" class="page-link">5</a></li>
+            <li class="page-item"><a href="#" class="page-link">6</a></li>
+            <li class="page-item"><a href="#" class="page-link">7</a></li>
+            <li class="page-item"><a href="#" class="page-link">8</a></li>
+            <li class="page-item active"><a href="#" class="page-link">9</a></li>
+            <li class="page-item"><a href="#" class="page-link">10</a></li>
+        </ul>
+
+    </div>
+
+</body>
+</html>

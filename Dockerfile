@@ -1,7 +1,7 @@
 #sudo docker run -it -v /home/tomas/Documents/prace/Asisto:/opt/asisto -p 8000:8000  php:7.1 /bin/bash
-from php:7.2
+from php:latest
 
-RUN apt update && apt install -y libtidy-dev zlib1g-dev libpng-dev unzip
+RUN apt update && apt install -y libtidy-dev zlib1g-dev libzip-dev libpng-dev unzip
 
 RUN docker-php-ext-install mysqli tidy zip gd
 

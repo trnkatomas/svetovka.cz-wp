@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light Gray Fan Menu</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9f9f9; /* Very light background to contrast the buttons */
+            padding: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50vh;
+        }
+
+        /* 1. THE ANCHOR */
+        .burst-widget {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            z-index: 100;
+        }
+
+        /* 2. THE MAIN TRIGGER ICON (Shopping Cart) */
+        .burst-icon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50px;
+            height: 50px;
+            
+            /* CHANGED: Light Gray Background */
+            background-color: #e0e0e0; 
+            color: #333;
+            
+            border-radius: 12px; /* Less rounded */
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        /* 3. THE TRAY (Invisible Container) */
+        .burst-tray {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 50px;
+            max-width: 50px; /* Start collapsed */
+            
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between buttons */
+            
+            padding-right: 60px; /* Space for the main icon */
+            
+            overflow: hidden;
+            pointer-events: none;
+            opacity: 0;
+            transition: max-width 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s;
+        }
+
+        /* 4. THE INDIVIDUAL BUTTONS */
+        .burst-btn {
+            /* CHANGED: Light Gray Background */
+            background-color: #e0e0e0;
+            color: #333;
+            
+            text-decoration: none;
+            padding: 0 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            
+            border-radius: 12px; /* Less rounded */
+            
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            
+            transform: translateX(20px);
+            opacity: 0;
+            transition: transform 0.4s ease, opacity 0.4s, background 0.2s;
+        }
+
+        /* CHANGED: Brighter on Hover */
+        .burst-btn:hover {
+            background-color: #ffffff; /* Becomes bright white */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Slightly stronger shadow */
+        }
+        
+        /* ============================
+           HOVER STATES 
+           ============================ */
+        
+        .burst-widget:hover .burst-tray {
+            max-width: 500px; /* Large enough to fit the longer text */
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Optional: Main icon also gets brighter on hover */
+        .burst-widget:hover .burst-icon {
+            background-color: #d6d6d6; /* Slightly different to indicate active state */
+        }
+
+        /* Reveal Buttons */
+        .burst-widget:hover .burst-btn {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        /* STAGGER DELAYS */
+        /* "koupit" (closest) appears first */
+        .burst-widget:hover .burst-btn:nth-child(2) { transition-delay: 0.05s; }
+        /* "koupit jako eknihu" (furthest) appears second */
+        .burst-widget:hover .burst-btn:nth-child(1) { transition-delay: 0.1s; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Dummy text context -->
+    <div style="width: 300px; margin-right: 50px;">
+        <h3>Kniha ABC</h3>
+        <p>
+            Cena: 299 Kč<br>
+            Hover over the cart to see buying options.
+        </p>
+    </div>
+
+    <!-- WIDGET START -->
+    <div class="burst-widget">
+        
+        <!-- The Main Icon -->
+        <div class="burst-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+        </div>
+
+        <!-- The Tray -->
+        <div class="burst-tray">
+            <!-- Furthest Button -->
+            <a href="#ebook" class="burst-btn">koupit jako eknihu</a>
+            <!-- Closest Button -->
+            <a href="#buy" class="burst-btn">koupit</a>
+        </div>
+
+    </div>
+    <!-- WIDGET END -->
+
+</body>
+</html>
