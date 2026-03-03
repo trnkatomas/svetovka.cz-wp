@@ -43,53 +43,57 @@ $custom_query = new WP_Query( $args );
 // 4. The Loop
 ?>
 
-<div id="primary" class="content-area">
-    <main id="main" class="site-main">
+<?php get_header(); ?>
 
-    <h1><?php the_title(); ?></h1>
-    <div class="page-content">
-        <?php 
-        // Show the main page content first (optional)
-        while ( have_posts() ) : the_post();
-            the_content();
-        endwhile; 
-        ?>
-    </div>
-
+<div class="content">
+	
     <div class="filtered-posts-list">
-        <?php if ( $custom_query->have_posts() ) : ?>
-            <div class="posts-grid">
-                <?php while ( $custom_query->have_posts() ) : $custom_query->the_post(); ?>
+	    <?php if ($custom_query->have_posts()) : ?>
+
+        <?php
+		    $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+		    $total_post_count = $custom_query->post_count;
+		    $total_pages = ceil( $total_post_count / $posts_per_page );
+		
+		    if ( "0" < $paged ) : ?>
+			    <div class="page-title">
+			
+				<h4><?php printf( __('Page %s of %s', 'fukasawa'), $paged, $custom_query->max_num_pages ); ?></h4>
+				
+			    </div> <!-- /page-title -->
+			
+			    <div class="clear"></div>
+		
+		    <?php endif; ?>
+	
+		    <div class="posts" id="posts">
+				
+	    	    <?php while ($custom_query->have_posts()) : $custom_query->the_post(); ?>
+	    	
+	    		    <?php get_template_part( 'content', get_post_format() ); ?>
+	    			        		            
+	            <?php endwhile; ?>
+        	                    
+	        </div> <!-- /posts -->
+    
+    	<?php if ( $custom_query->max_num_pages > 1 ) : ?>
+		
+            <div class="archive-nav">
                     
-                    <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-                        <header class="entry-header">
-                            <h2 class="entry-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
-                        </header>
-                        <div class="entry-summary">
-                            <?php the_excerpt(); ?>
-                        </div>
-                    </article>
+                <?php echo get_next_posts_link( __('Older posts', 'fukasawa') . ' &rarr;', $custom_query->max_num_pages); ?>
+                    
+                <?php echo get_previous_posts_link( '&larr; ' . __('Newer posts', 'fukasawa')); ?>
+                
+                <div class="clear"></div>
+                            
+            </div> <!-- /archive-nav -->
+						
+	    <?php endif; ?>
 
-                <?php endwhile; ?>
-            </div>
-
-            <!-- Pagination -->
-            <div class="pagination">
-                <?php 
-                echo paginate_links( array(
-                    'total' => $custom_query->max_num_pages
-                ) ); 
-                ?>
-            </div>
-
-            <?php wp_reset_postdata(); // Important: reset global post data ?>
-        
-        <?php else : ?>
-            <p>No posts found matching the selected criteria.</p>
+        <?php wp_reset_postdata(); // Important: reset global post data ?>
         <?php endif; ?>
     </div>
 
-    </main>
 </div>
 
 <?php get_footer(); ?>
